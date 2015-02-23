@@ -18,8 +18,18 @@ public:
     ImageInterpolate( const Image<T>& i);
 
 
+    // accesseurs
+    Span<T>* getD_0Face();
+    Span<T>* getD_1FaceH();
+    Span<T>* getD_1FaceV();
+
+
+    void displayImage ();
 
 };
+
+template <typename T>
+std::ostream& operator << (std::ostream& os,const ImageInterpolate<T>& im );
 
 #include "ImageInterpolate.hpp"
 

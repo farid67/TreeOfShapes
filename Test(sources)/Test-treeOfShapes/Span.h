@@ -19,6 +19,11 @@ public:
     void setSpan(T t1, T t2);
     void setSpan(T val);// modification de l'intervalle pour qu'il ne contienne qu'une valeur
 
+    // variantes pour le calculs des d0-Faces dans l'image interpolate
+    // uniquement une variante avec tri + récupération des valeurs extremes
+    void setSpan(const Span<T>& t1,const Span<T>& t2);
+    void setSpan(const Span<T>& t1,const Span<T>& t2, const Span<T>& t3);
+    void setSpan (const Span<T>& t1, const Span<T>& t2, const Span<T>& t3, const Span<T>& t4);
 
     T getInfBounds() const ;
     T getSupBounds () const ;

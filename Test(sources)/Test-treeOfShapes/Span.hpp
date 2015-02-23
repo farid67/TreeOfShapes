@@ -2,6 +2,8 @@
 #define SPAN_HPP
 
 #include "Span.h"
+#include "algorithm"
+
 
 template <typename T>
 Span<T>::Span():m_inf_bounds (0), m_sup_bounds(0)
@@ -44,10 +46,41 @@ void Span<T>::setSpan(T t1, T t2)
     }
 }
 
+
+template <typename T>
+void Span<T>:: setSpan (const Span<T>& t1, const Span<T>& t2)
+{
+    T tmp_tab[4] = {t1.getInfBounds(),t1.getSupBounds(),t2.getInfBounds(),t2.getSupBounds()};
+    std::sort(tmp_tab,tmp_tab+(2*2));
+    m_inf_bounds = tmp_tab[0];
+    m_sup_bounds = tmp_tab[3];
+}
+
+template <typename T>
+void Span<T>:: setSpan (const Span<T>& t1, const Span<T>& t2, const Span<T>& t3)
+{
+    //on trie le tableau -> gain en simplicité
+    T tmp_tab[6] = {t1.getInfBounds(),t1.getSupBounds(),t2.getInfBounds(),t2.getSupBounds(),t3.getInfBounds(),t3.getSupBounds()};
+    std::sort(tmp_tab,tmp_tab+(2*3));
+    m_inf_bounds = tmp_tab[0];
+    m_sup_bounds = tmp_tab[5];
+}
+
+template <typename T>
+void Span<T>:: setSpan (const Span<T> &t1, const Span<T> &t2, const Span<T> &t3, const Span<T> &t4)
+{
+    //on trie le tableau -> gain en simplicité
+    T tmp_tab[8] = {t1.getInfBounds(),t1.getSupBounds(),t2.getInfBounds(),t2.getSupBounds(),t3.getInfBounds(),t3.getSupBounds(),t4.getInfBounds(),t4.getSupBounds()};
+    std::sort(tmp_tab,tmp_tab+(2*4));
+    m_inf_bounds = tmp_tab[0];
+    m_sup_bounds = tmp_tab[7];
+}
+
 template <typename T>
 void Span<T>::setSpan(T val)
 {
-    m_inf_bounds = m_sup_bounds = val;
+    m_inf_bounds = val;
+    m_sup_bounds = val;
 }
 
 template <typename T>

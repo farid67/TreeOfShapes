@@ -136,7 +136,9 @@ int main()
 
     ImageInterpolate<unsigned char> u(i);
 
+    displayLegend();
 
+    u.displayImage();
 
     // prochaine étape -> création du tableau pour les d-1 faces dans le constructeur de image_interpolate
 

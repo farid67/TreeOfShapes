@@ -35,7 +35,7 @@ public:
     int* sortGrayLevel(); // tri les pixels en fonction de leur niveau de gris
 
 
-    unsigned char median_edge_value();// retourne la valeur de niveau de gris médiane sur la bordure de l'image
+    T median_edge_value();// retourne la valeur de niveau de gris médiane sur la bordure de l'image
 
     void add_edge (); // fonction qui ajoute à l'image courante une bordure avec une valeur égale à la médiane des valeurs présentent sur la bordure interne
 

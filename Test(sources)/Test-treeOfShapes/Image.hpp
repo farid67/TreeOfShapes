@@ -4,6 +4,7 @@
 #include "cassert"
 #include "Image.h"
 #include "math.h"
+#include "algorithm"
 
 template <typename T>
 Image<T>::Image():m_pixels(NULL),m_h(0),m_w(0)
@@ -224,28 +225,44 @@ void canonize_tree(int * parent,int nb_elem, const Image<T> & im)
 // fonction median_edge_value
 
 template <typename T>
-unsigned char Image<T>::median_edge_value()
+T Image<T>::median_edge_value()
 {
-    int sum(0), i, h(getH()), w(getW());
+    int i, h(getH()), w(getW());
+
+    // création du tableau qui sera trié
+
+    int size(2*h+ 2*(w-2)),compteur(0);
+    T tmp[size];
 
     for (i = 0; i < w; i ++)
     {
-        sum += getPixel(0,i);
-        sum += getPixel(h-1,i);
+        tmp[compteur] = getPixel(0,i);
+        tmp[compteur+1] = getPixel(h-1,i);
+        compteur += 2;
     }
 
     for (i = 0; i < h; i++)
     {
-        sum += getPixel(i,0);
-        sum += getPixel(i,w-1);
+        tmp[compteur] = getPixel(i,0);
+        tmp[compteur +1]= getPixel(i,w-1);
+        compteur +=2;
     }
 
-    double median = static_cast<double>(sum);
-    median /= static_cast<double> ((h*2) + (w*2));
+    // tri du tableau
 
+    std::sort(tmp,tmp+size);
 
-
-    return static_cast <unsigned char> (round(median));
+    // récupération de la bonne valeur
+    if (size % 2 == 1)
+    {
+        return tmp[size/2];
+    }
+    else
+    {
+        int sum = static_cast<int>(tmp[size/2 - 1]) + static_cast<int> (tmp[size/2 ]);
+        sum/= 2;
+        return static_cast<T> (sum);
+    }
 }
 
 // fonction add_edge pour ajouter une bordure externe à l'image
@@ -254,7 +271,7 @@ template <typename T>
 void Image<T>::add_edge()
 {
     // censé être une variable de type T
-    unsigned char edge_val = median_edge_value();
+    T edge_val = median_edge_value();
     // modification de la taille de l'image -> ajout de 2 lignes et de 2 colonnes
 
 //    std::cout << "valeur médiane bordure interne " << static_cast<int>(edge_val) << std::endl;
