@@ -13,6 +13,7 @@ private:
 public:
     Span ();
     Span (T min, T max);
+    Span(const Span<T>& s);
     Span (T uniq_val); // dans le cas où on souhaite créer un intervalle avec une seule valeur -> par exemple lorsqu'on se trouve sur une bordure
     ~Span();
 

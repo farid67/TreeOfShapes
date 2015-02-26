@@ -128,8 +128,12 @@ ImageInterpolate<T>::ImageInterpolate(const Image<T> &im):Image<T>(im)
         }
     }
 
+    // modification des dimensions de U en fonction de la set-valued-map
 
-    //affichage d-1 Faces + d-2Faces (les pixels) + d-0Faces
+
+    this->setH(2*h +1);
+    this->setW(2*w +1);
+
 }
 
 // accesseurs
@@ -157,7 +161,7 @@ template <typename T>
 std::ostream operator << (std::ostream& os, const ImageInterpolate<T>& im)
 {
 
-    int i,j,h (im.getH()),w(im.getW());
+    int i,j,h ((im.getH()-1) / 2),w((im.getW()-1)/2);
     for (i = 0 ; i < h; i++)
     {
         // afficher la j-ème ligne du tableau d_1Faces_V
@@ -172,7 +176,7 @@ std::ostream operator << (std::ostream& os, const ImageInterpolate<T>& im)
         for (j= 0 ; j < w; j++)
         {
             os << im.getD_1FaceH()[i*(w+1) + j] << "   ";
-            os << static_cast <int>(im.getPixel(i,j)) << "   ";
+            os << static_cast <int>(im.getPixels()[i*w+j]) << "   ";
         }
 
         // afficher la ligne du bord de droite
@@ -190,7 +194,7 @@ std::ostream operator << (std::ostream& os, const ImageInterpolate<T>& im)
 }
 
 
-// -> PROB : lors de l'appel à l'opertor << sur un objet de type ImageInterpolate, le compilateur ne sait pas si l'objet est de
+// -> PROBLEME : lors de l'appel à l'opertor << sur un objet de type ImageInterpolate, le compilateur ne sait pas si l'objet est de
 // type image ou de type ImageInterpolate ?
 // -> définition d'une nouvelle fonction display pour le moment
 
@@ -207,7 +211,11 @@ void displayLegend()
 template <typename T>
 void ImageInterpolate<T>::displayImage()
 {
-    int i,j,h (this->getH()),w(this->getW());
+    // on repart avec les dimensions de la set-valued map, elles sont plus agréables à utilisées pour l'affichage des pixels
+    int i,j,h ((this->getH()-1 )/2),w((this->getW()-1)/2);
+
+
+
     for (i = 0 ; i < h; i++)
     {
         // afficher la j-ème ligne du tableau d_1Faces_V
@@ -222,7 +230,7 @@ void ImageInterpolate<T>::displayImage()
         for (j= 0 ; j < w; j++)
         {
             std::cout << "\033[1;32m" << this->getD_1FaceH()[i*(w+1) + j] << "\033[0m   ";
-            std::cout << "\033[1;31m" << static_cast <int>(this->getPixel(i,j)) << "\033[0m   ";
+            std::cout << "\033[1;31m" << static_cast <int>(this->getPixels()[i*w+j]) << "\033[0m   ";
         }
 
         // afficher la ligne du bord de droite
@@ -236,5 +244,203 @@ void ImageInterpolate<T>::displayImage()
     }
     std::cout << "\033[1;34m" << this->getD_0Face()[h * (w+1) + w ] << "\033[0m " << std::endl;
 }
+
+
+
+// SORT procedure
+
+template <typename T>
+void ImageInterpolate<T>::sort(Image<T>* im, std::vector<int>* R)
+{
+    // modification des dimensions de im pour qu'elle est la même taille que U (dans notre cas U = this)
+    im->setH(this->getH());
+    im->setW(this->getW());
+
+    T* new_pixels = new T[this->getH()*this->getW()];
+    im->setPixels(new_pixels);
+
+    // création de q
+    // q sera un tableau de 255 listes contenant des entiers (les offsets de l'image U)
+    // 255 listes pour avoir une liste par niveau de gris
+    std::list<int> * q = new std::list<int>[256];
+
+
+    // creation de deja_vu
+    // nbp -> nombre d'element de l'image U
+    int nbp = this->getH()*this->getW();
+    bool* deja_vu = new bool[nbp];
+
+    // création d'un tableau qui contient uniquement des intervalles avec les valeurs correspondantes à une lecture linéaire U
+    std::vector<Span<T> > *U = standardize();
+
+    int p_inf,h;
+    T l;
+
+
+    // p_inf correspond au point canonique du root level
+    p_inf = 0;
+    push(q,U->at(0).getInfBounds(),p_inf);
+
+    deja_vu[p_inf] = true;
+
+    // grey level of p_inf
+    T l_inf = U->at(0).getInfBounds();
+
+    l = l_inf;
+
+
+    while (!is_empty(q))
+    {
+        h = priority_pop(q,&l);
+        im->getPixels()[h] = l;
+        R->push_back(h);
+
+        int n;
+        for (n = 0; n < nbp; n++)
+        {
+            if (!deja_vu[n])
+            {
+                priority_push(q,n,U,l);
+                deja_vu[n] = true;
+            }
+        }
+    }
+}
+
+
+//standardize -> prend U et renvoie un tableau linéaire contenant chaque case présent dans l'image de façon linéaire
+template <typename T>
+std::vector<Span<T> > *ImageInterpolate<T>::standardize()
+{
+//    int nbp = this->getH()*this->getW();
+    std::vector<Span<T> > *tab = new std::vector<Span<T> > ;
+
+    int i,j,h ((this->getH()-1 )/2),w((this->getW()-1)/2);
+
+    for (i = 0 ; i < h; i++)
+    {
+        for (j= 0; j< w; j++)
+        {
+            tab->push_back(this->getD_0Face()[i*(w+1)+j]);
+            tab->push_back(this->getD_1FaceV()[i*w+j]);
+        }
+        tab->push_back(this->getD_0Face()[i*(w+1)+w]);
+
+        for (j= 0 ; j < w; j++)
+        {
+            tab->push_back(this->getD_1FaceH()[i*(w+1) + j]);
+            tab->push_back(*(new Span<T>(this->getPixels()[i*w+j])));
+        }
+
+        tab->push_back(this->getD_1FaceH()[i*(w+1) + w]);
+    }
+    for (j= 0; j < w; j++)
+    {
+        tab->push_back(this->getD_0Face()[h * (w+1) + j ]);
+        tab->push_back(this->getD_1FaceV()[h * w + j ]);
+    }
+    tab->push_back(this->getD_0Face()[h * (w+1) + w ]);
+
+    return tab;
+}
+
+// Push procedure
+template <typename T>
+void push(std::list<int>* q ,T l,int p)
+{
+    // ajoute l'offset p à la position l du tableau de listes
+    q[static_cast<int>(l)].push_back(p);
+}
+
+
+// is_empty procedure
+bool is_empty (std::list<int>* q)
+{
+    int i;
+    for (i = 0; i < 256; i ++)
+    {
+        if (!q[i].empty())
+            return false;
+    }
+    return true;
+}
+
+
+// priority_push
+template <typename T>
+void priority_push(std::list<int>* q, int h, std::vector<Span<T> >* U, T l )
+{
+    T lower,upper,l_;
+    lower = U->at(h).getInfBounds();
+    upper = U->at(h).getSupBounds();
+
+    if (static_cast<int>(lower) > static_cast<int>(l))
+    {
+        l_ = lower;
+    }
+
+    else if (static_cast<int>(upper) < static_cast<int>(l))
+    {
+        l_ = upper;
+    }
+    else
+        l_ = l;
+
+    push(q,l_,h);
+}
+
+
+void test_modif (int *pt_x)
+{
+    *pt_x = 12;
+    std::cout << *pt_x << std::endl;
+}
+
+// priority_pop
+template <typename T>
+int priority_pop (std::list<int>* q,T* l)
+{
+    int grey_level = static_cast<int>(*l);
+    if (q[grey_level].empty())
+    {
+        bool found = false;
+        int compteur = 0;
+        // check l sup
+        while (!found)
+        {
+            // going up
+            if (grey_level + compteur < 256)
+            {
+                if (!q[grey_level + compteur].empty())
+                {
+                    *l = static_cast<T>(grey_level+compteur);
+                    int return_val = q[grey_level + compteur].front();
+                    q[grey_level + compteur].pop_front();
+                    return return_val;
+                }
+            }
+            // going down
+            if(grey_level -compteur > 0)
+            {
+                if (!q[grey_level-compteur].empty())
+                {
+                    *l = static_cast<T>(grey_level-compteur);
+                    int return_val = q[grey_level - compteur].front();
+                    q[grey_level - compteur].pop_front();
+                    return return_val;
+                }
+            }
+            //increasing compteur
+            compteur ++;
+        }
+    }
+
+    // cas non vide
+
+    int return_val = q[grey_level].front();
+    q[grey_level].pop_front();
+    return return_val;
+}
+
 
 #endif // IMAGEINTERPOLATE_HPP

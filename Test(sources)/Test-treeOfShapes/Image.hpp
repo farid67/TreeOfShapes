@@ -60,6 +60,20 @@ int Image<T>::getW() const
     return m_w;
 }
 
+// modificateurs
+
+template <typename T>
+void Image<T>::setH(int h)
+{
+    m_h = h;
+}
+
+template <typename T>
+void Image<T>::setW(int w)
+{
+    m_w = w;
+}
+
 template <typename T>
 T Image <T>::operator [](int i)
 {
@@ -86,6 +100,18 @@ void Image<T>::setPixel(int x, int y, T val)
 {
     // x -> ligne , y -> colonne
     m_pixels[x*getW() + y] = val;
+}
+
+template <typename T>
+T* Image<T>::getPixels()
+{
+    return m_pixels;
+}
+
+template <typename T>
+void Image<T>::setPixels(T *t)
+{
+    m_pixels = t;
 }
 
 template <typename T>

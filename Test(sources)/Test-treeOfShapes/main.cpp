@@ -131,17 +131,37 @@ int main()
 
     std::cout << i << std::endl;
 
+    // Attention -> pour la version finale on pourra avoir envie de passer l'image de base en paramètre au constructeur de ImageInterpolate
+    // dans ce cas, il faudra faire l'opération i.set_valued() dans le constructeur
 
-    // on passe l'image de base dont on a déjà créé la version interpolate
+    // on passe l'image de base dont on a déjà créé la version set-valued
 
     ImageInterpolate<unsigned char> u(i);
 
     displayLegend();
 
+    std::cout << "dimension de U " << u.getH() << "*" << u.getW()<< std::endl;
+
     u.displayImage();
 
-    // prochaine étape -> création du tableau pour les d-1 faces dans le constructeur de image_interpolate
+    Image<unsigned char> test;
 
+    std::vector<int> r;
+
+    u.sort(&test,&r);
+
+
+    // affichage
+    std::cout << "affichage de R:" << std::endl;
+
+    std::vector<int>::iterator it;
+    for (it = r.begin();it != r.end(); it++)
+    {
+        std::cout << *it << " ";
+    }
+    std::cout << std::endl;
+
+    std::cout << test << std::endl;
 
     return 0;
 }

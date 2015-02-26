@@ -25,12 +25,19 @@ public:
     T operator[](int i); // modificateurs
     T& operator [] (int i) const; // accesseurs
 
+    T* getPixels();
+    void setPixels(T* t);
+
+
     T& getPixel(int x, int y ) const;
 
     void setPixel(int x, int y , T val);
 
     int getH() const;
     int getW() const;
+
+    void setH(int H);
+    void setW(int w);
 
     int* sortGrayLevel(); // tri les pixels en fonction de leur niveau de gris
 

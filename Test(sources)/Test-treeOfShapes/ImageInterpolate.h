@@ -4,6 +4,8 @@
 
 #include "Image.h"
 #include "Span.h"
+#include "vector"
+#include "list"
 
 template <typename T>
 class ImageInterpolate:public Image<T>
@@ -23,13 +25,35 @@ public:
     Span<T>* getD_1FaceH();
     Span<T>* getD_1FaceV();
 
+    Span<T> getElement(int h);
+
+
+    // standardize -> tableau linéaire de Span correspondant à un parcours linéaire de U (this)
+    std::vector<Span<T> > *standardize();
 
     void displayImage ();
+
+    // SORT procédure, prend en paramètre une image im qui sera le u(indice b) de l'article
+    //-> pour ne pas avoir à renvoyer une structure qui contienne une image et un tableau
+    void sort(Image<T> *im, std::vector<int> *R );
 
 };
 
 template <typename T>
 std::ostream& operator << (std::ostream& os,const ImageInterpolate<T>& im );
+
+template <typename T>
+void push(std::list<int>* q ,T l,int p);
+
+
+bool is_empty (std::list<int>* q);
+
+template <typename T>
+int priority_pop (std::list<int>* q,T* l);
+
+template <typename T>
+void priority_push(std::list<int>* q, int h, std::vector<Span<T> > *U,T l );
+
 
 #include "ImageInterpolate.hpp"
 

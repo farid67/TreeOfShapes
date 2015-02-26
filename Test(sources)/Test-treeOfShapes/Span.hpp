@@ -23,6 +23,12 @@ Span<T>::Span(T uniq_val) :m_inf_bounds (uniq_val),m_sup_bounds(uniq_val)
 
 }
 
+template <typename T>
+Span<T>::Span(const Span<T> &s)
+{
+    m_inf_bounds = s.getInfBounds();
+    m_sup_bounds = s.getSupBounds();
+}
 
 template <typename T>
 Span<T>::~Span()
