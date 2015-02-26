@@ -7,7 +7,7 @@
 
 int main()
 {
-/*
+
     Image<unsigned char> i(5,6);
 
     std::cout << "image de taille " << i.getH() << "*" << i.getW() << std::endl;
@@ -27,8 +27,8 @@ int main()
     std::cout << "test " << std::endl;
 
     std::cout << i << std::endl;
-*/
 
+/*
     // image tirer de l'article "effective component..."
     // ------------------------
     //
@@ -41,13 +41,15 @@ int main()
     i.setPixel(0,0,3); i.setPixel(0,1,3); i.setPixel(0,2,1); i.setPixel(0,3,4); i.setPixel(0,4,2);
     // 2 ème ligne -> 4 - 1 - 2 - 3 - 1
     i.setPixel(1,0,4); i.setPixel(1,1,1); i.setPixel(1,2,2); i.setPixel(1,3,3); i.setPixel(1,4,1);
-
+*/
 
     //coloration terminal -> \033 puis 2 entier après un crochet ouvrant : généralement le premier sera 1 et le second la couleur puis m
 
     std::cout << "\033[1;42m\t\tImage de base :\033[0m" << std::endl;
 
     std::cout << i << std::endl;
+
+    int h(i.getH()),w(i.getW());
 
     //                      TESTS CRéTION DES MAX ET MIN-TREE
 
@@ -148,20 +150,106 @@ int main()
 
     std::vector<int> r;
 
-    u.sort(&test,&r);
 
+    u.sort(&test,&r);
 
     // affichage
     std::cout << "affichage de R:" << std::endl;
 
     std::vector<int>::iterator it;
+    int compteur(0);
     for (it = r.begin();it != r.end(); it++)
     {
         std::cout << *it << " ";
+        compteur ++;
+        if (compteur == test.getW())
+        {
+            compteur =0;
+            std::cout << std::endl;
+        }
     }
     std::cout << std::endl;
 
+    std::cout << "affichage de U(indice b) -> retour de la fonction sort" <<std::endl;
+
     std::cout << test << std::endl;
+
+    //  application de la fonction union_find sur R qui est un des retours de la fonction sort
+    int nbp = test.getH() * test.getW();
+
+    // pour ne pas avoir de problème de type, on doit passer en paramètre à la fonction union_find un tableau d'entier,
+    // or R est dans notre cas un vector<int>, on passe alors le pointeur vers le premier élément du vector ce qui donnera un int*
+    int * parent = union_find(&r[0],nbp);
+
+    /*
+    std::cout << "affichage du tableau parent : " << std::endl;
+
+    int j;
+    for (j=0; j < nbp; j++)
+    {
+        if (j%test.getW() == 0)
+        {
+            std::cout << std::endl;
+        }
+        std::cout << parent[j] << " ";
+    }
+    std::cout << std::endl;
+    */
+
+    // canonicalize_tree
+
+    canonize_tree(parent,nbp,test);
+
+    /*
+
+    std::cout << "affichage du tableau parent (canonicalize version): " << std::endl;
+
+    for (j=0; j < nbp; j++)
+    {
+        if (j%test.getW() == 0)
+        {
+            std::cout << std::endl;
+        }
+        std::cout << parent[j] << " ";
+    }
+    std::cout << std::endl;
+
+    */
+
+
+    // un_interpolate(R,parent)
+    // -> revient à récupérer l'application inverse de l'interpolation sur R et celle sur parent
+
+    int* R_un_interpolate  = u.un_interpolate(&r[0]);
+
+    int* parent_un_interpolate = u.un_interpolate(parent);
+
+    // affichage des 2 tableaux en fonctions des dimensions de l'image de base -> contenues ici dans h et w
+
+    int x,y;
+
+    std::cout << std::endl << "R final " << std::endl;
+
+    for(x = 0; x < h; x++)
+    {
+        for (y = 0; y < w; y++)
+        {
+            std::cout << R_un_interpolate[x*w + y] << " ";
+        }
+        std::cout << std::endl;
+    }
+
+    std::cout << std::endl << "parent final"<< std::endl;
+
+    for(x = 0; x < h; x++)
+    {
+        for (y = 0; y < w; y++)
+        {
+            std::cout << parent_un_interpolate[x*w + y] << " ";
+        }
+        std::cout << std::endl;
+    }
+
 
     return 0;
 }

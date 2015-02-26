@@ -37,6 +37,8 @@ public:
     //-> pour ne pas avoir à renvoyer une structure qui contienne une image et un tableau
     void sort(Image<T> *im, std::vector<int> *R );
 
+    int * un_interpolate (int * table);
+
 };
 
 template <typename T>

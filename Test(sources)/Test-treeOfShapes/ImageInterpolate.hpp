@@ -442,5 +442,40 @@ int priority_pop (std::list<int>* q,T* l)
     return return_val;
 }
 
+// UN_INTERPOLATE procedure
+
+template <typename T>
+int *ImageInterpolate<T>::un_interpolate(int *table)
+{
+    // création du tableau qu'on devra renvoyer, pour le moment on a uniquement accès aux dimensions de l'image interpolate
+    // équation -> new_h (image interpolate) = 4 * h(image de base) + 7
+
+    int h = (this->getH()-7) / 4;
+    int w = (this->getW()-7) / 4;
+
+    std::cout << "dimension du tableau " << h << "*"<< w << std::endl;
+
+    int *return_tab  = new int [h * w];
+
+    int i,j,compteur(0);
+
+    for (i= 0;i < this->getH() ;i ++)
+    {
+        for (j= 0;j < this->getW();j++)
+        {
+            if (i != 1 && i != this->getH()-2 && j != 1 && j!= this->getW()-2)// pour éviter les bordures
+                if (((i-1)%4 == 0) && ((j-1)%4 == 0))// pour ne récupérer que les bonnes cases
+                {
+                    return_tab[compteur]= table[i*this->getW() +j];
+                    compteur ++;
+                }
+        }
+    }
+
+    return return_tab;
+
+
+}
+
 
 #endif // IMAGEINTERPOLATE_HPP
