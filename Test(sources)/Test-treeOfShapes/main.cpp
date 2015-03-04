@@ -7,7 +7,8 @@
 
 int main()
 {
-
+//    /*
+    // Image tirée de l'article de base : "A quasi linear algorithm to compute the tree of shapes.."
     Image<unsigned char> i(5,6);
 
     std::cout << "image de taille " << i.getH() << "*" << i.getW() << std::endl;
@@ -17,18 +18,22 @@ int main()
     i.setPixel(0,0,1); i.setPixel(0,1,1); i.setPixel(0,2,1); i.setPixel(0,3,1); i.setPixel(0,4,1); i.setPixel(0,5,1);
     // 2 ème ligne -> 1 - 0 - 0 - 3 - 3 - 1
     i.setPixel(1,0,1); i.setPixel(1,1,0); i.setPixel(1,2,0); i.setPixel(1,3,3); i.setPixel(1,4,3); i.setPixel(1,5,1);
-    // 3 ème ligne -> 1 - 0 - 1 - 1 - 0 - 1
-    i.setPixel(2,0,1); i.setPixel(2,1,0); i.setPixel(2,2,1); i.setPixel(2,3,1); i.setPixel(2,4,0); i.setPixel(2,5,1);
+    // 3 ème ligne -> 1 - 0 - 1 - 1 - 3 - 1
+    i.setPixel(2,0,1); i.setPixel(2,1,0); i.setPixel(2,2,1); i.setPixel(2,3,1); i.setPixel(2,4,3); i.setPixel(2,5,1);
     // 4 ème ligne -> 1 - 0 - 0 - 3 - 3 - 1
     i.setPixel(3,0,1); i.setPixel(3,1,0); i.setPixel(3,2,0); i.setPixel(3,3,3); i.setPixel(3,4,3); i.setPixel(3,5,1);
     // 5 ème ligne -> 1 - 1 - 1 - 1 - 1 - 1
     i.setPixel(4,0,1); i.setPixel(4,1,1); i.setPixel(4,2,1); i.setPixel(4,3,1); i.setPixel(4,4,1); i.setPixel(4,5,1);
 
+    int h(i.getH()),w(i.getW());
+
     std::cout << "test " << std::endl;
 
     std::cout << i << std::endl;
+//    */
 
-/*
+    /*
+
     // image tirer de l'article "effective component..."
     // ------------------------
     //
@@ -41,15 +46,14 @@ int main()
     i.setPixel(0,0,3); i.setPixel(0,1,3); i.setPixel(0,2,1); i.setPixel(0,3,4); i.setPixel(0,4,2);
     // 2 ème ligne -> 4 - 1 - 2 - 3 - 1
     i.setPixel(1,0,4); i.setPixel(1,1,1); i.setPixel(1,2,2); i.setPixel(1,3,3); i.setPixel(1,4,1);
-*/
-
-    //coloration terminal -> \033 puis 2 entier après un crochet ouvrant : généralement le premier sera 1 et le second la couleur puis m
 
     std::cout << "\033[1;42m\t\tImage de base :\033[0m" << std::endl;
 
     std::cout << i << std::endl;
 
     int h(i.getH()),w(i.getW());
+
+    */
 
     //                      TESTS CRéTION DES MAX ET MIN-TREE
 
@@ -134,7 +138,7 @@ int main()
     std::cout << i << std::endl;
 
     // Attention -> pour la version finale on pourra avoir envie de passer l'image de base en paramètre au constructeur de ImageInterpolate
-    // dans ce cas, il faudra faire l'opération i.set_valued() dans le constructeur
+    // dans ce cas, il faudra faire les opérations add_edge() et set_valued() dans le constructeur
 
     // on passe l'image de base dont on a déjà créé la version set-valued
 
@@ -144,12 +148,20 @@ int main()
 
     std::cout << "dimension de U " << u.getH() << "*" << u.getW()<< std::endl;
 
+    // vérifier que l'image obtenue après interpolation correspond bien à ce qui est attendu
+
     u.displayImage();
+
+
 
     Image<unsigned char> test;
 
     std::vector<int> r;
 
+
+    // utilisation de la procédure Sort en passant en paramètre une image vide (dont on modifiera les dimensions pour qu'elle est les
+    // même dimension que l'image interpolée ainsi qu'un tableau R qui contiendra les éléments suivant la relation de parenté que l'on
+    // souhaite mettre en place
 
     u.sort(&test,&r);
 

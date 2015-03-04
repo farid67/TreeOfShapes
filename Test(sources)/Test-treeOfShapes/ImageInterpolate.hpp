@@ -252,6 +252,10 @@ void ImageInterpolate<T>::displayImage()
 template <typename T>
 void ImageInterpolate<T>::sort(Image<T>* im, std::vector<int>* R)
 {
+    std::cout << "entrée dans la procédure Sort " << std::endl;
+
+    //                  INITIALISATIONS
+
     // modification des dimensions de im pour qu'elle est la même taille que U (dans notre cas U = this)
     im->setH(this->getH());
     im->setW(this->getW());
@@ -259,19 +263,51 @@ void ImageInterpolate<T>::sort(Image<T>* im, std::vector<int>* R)
     T* new_pixels = new T[this->getH()*this->getW()];
     im->setPixels(new_pixels);
 
-    // création de q
+                                                        // création de q
+
     // q sera un tableau de 255 listes contenant des entiers (les offsets de l'image U)
     // 255 listes pour avoir une liste par niveau de gris
     std::list<int> * q = new std::list<int>[256];
 
+    if (is_empty(q))
+        std::cout << "q a correctement été construite, pour chaque valeur de 0 à 256 les listes sont bien vides" << std::endl;
 
-    // creation de deja_vu
+
+                                                        // creation de deja_vu
     // nbp -> nombre d'element de l'image U
     int nbp = this->getH()*this->getW();
     bool* deja_vu = new bool[nbp];
+    // + initialisation de tous les éléments du tableau à faux
+    for (int i = 0; i < nbp; i++)
+    {
+        deja_vu[i] = false;
+    }
 
-    // création d'un tableau qui contient uniquement des intervalles avec les valeurs correspondantes à une lecture linéaire U
+    // création d'un tableau qui contient uniquement des intervalles avec les valeurs correspondantes à une lecture linéaire de U
     std::vector<Span<T> > *U = standardize();
+
+
+    /*
+    //                      AFFICHAGE du résultat de la fonction standardize sur une image interpolée
+
+    // test sur la fonction standardize sur l'image interpolée
+    typename std::vector<Span<T> >::iterator it ;
+
+    int compteur =0;
+
+    for (it = U->begin(); it != U->end() ;it++)
+    {
+        std::cout << *it << " ";
+        compteur ++;
+        if (compteur % this->getW() == 0)
+        {
+            std::cout << std::endl;
+        }
+    }
+
+    // fin test affichage
+
+    */
 
     int p_inf,h;
     T l;
@@ -279,6 +315,7 @@ void ImageInterpolate<T>::sort(Image<T>* im, std::vector<int>* R)
 
     // p_inf correspond au point canonique du root level
     p_inf = 0;
+    // revient à faire PUSH[q[l_inf],p_inf]
     push(q,U->at(0).getInfBounds(),p_inf);
 
     deja_vu[p_inf] = true;
@@ -288,6 +325,7 @@ void ImageInterpolate<T>::sort(Image<T>* im, std::vector<int>* R)
 
     l = l_inf;
 
+    int n;
 
     while (!is_empty(q))
     {
@@ -295,7 +333,9 @@ void ImageInterpolate<T>::sort(Image<T>* im, std::vector<int>* R)
         im->getPixels()[h] = l;
         R->push_back(h);
 
-        int n;
+//        display_q(q);
+
+        // pour tout n tel que deja_vu[n] = faux
         for (n = 0; n < nbp; n++)
         {
             if (!deja_vu[n])
@@ -303,6 +343,26 @@ void ImageInterpolate<T>::sort(Image<T>* im, std::vector<int>* R)
                 priority_push(q,n,U,l);
                 deja_vu[n] = true;
             }
+        }
+    }
+}
+
+// display_q -> fonction servant à avoir un aperçu du contenu de q
+void display_q(std::list<int> *q )
+{
+    int i;
+    for (i=0; i < 256; i ++)
+    {
+        if (!q[i].empty())
+        {
+            std::cout << "[" << i << "] : ";
+            // affichage des valeurs contenue dans la liste q[i]
+            typename std::list<int> ::iterator it;
+            for (it = q[i].begin(); it!= q[i].end(); it++)
+            {
+                std::cout << *it << " -> ";
+            }
+            std::cout << std::endl;
         }
     }
 }
@@ -386,14 +446,9 @@ void priority_push(std::list<int>* q, int h, std::vector<Span<T> >* U, T l )
     else
         l_ = l;
 
+//    std::cout << "la fonction priority_push demande de faire un push pour le niveau de gris " << static_cast<int>(l_) << " avec l'offset : " << h << std::endl;
+
     push(q,l_,h);
-}
-
-
-void test_modif (int *pt_x)
-{
-    *pt_x = 12;
-    std::cout << *pt_x << std::endl;
 }
 
 // priority_pop
@@ -401,10 +456,11 @@ template <typename T>
 int priority_pop (std::list<int>* q,T* l)
 {
     int grey_level = static_cast<int>(*l);
+//    std::cout << "\t\tniveau de gris en entrée " << grey_level << std::endl ;
     if (q[grey_level].empty())
     {
         bool found = false;
-        int compteur = 0;
+        int compteur = 1;
         // check l sup
         while (!found)
         {
@@ -420,7 +476,7 @@ int priority_pop (std::list<int>* q,T* l)
                 }
             }
             // going down
-            if(grey_level -compteur > 0)
+            if(grey_level -compteur >= 0)
             {
                 if (!q[grey_level-compteur].empty())
                 {

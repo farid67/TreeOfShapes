@@ -1,0 +1,7 @@
+Coloration syntaxique sur le terminal
+
+    pour la coloration syntaxique du terminal, on doit utiliser la méthode suivante :
+    \033 puis 2 entier après un crochet ouvrant : généralement le premier sera 1 et le second la couleur puis m
+
+    -> le texte sera entre ce code asquii et un autre code permettant de faire comprendre au terminal qu'il doit reprendre une
+    coloration normale "\033[0m"

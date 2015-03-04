@@ -344,7 +344,9 @@ compiler_clean:
 main.o: ../Test-treeOfShapes/main.cpp ../Test-treeOfShapes/Image.h \
 		../Test-treeOfShapes/Image.hpp \
 		../Test-treeOfShapes/Span.h \
-		../Test-treeOfShapes/Span.hpp
+		../Test-treeOfShapes/Span.hpp \
+		../Test-treeOfShapes/ImageInterpolate.h \
+		../Test-treeOfShapes/ImageInterpolate.hpp
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o main.o ../Test-treeOfShapes/main.cpp
 
 ####### Install

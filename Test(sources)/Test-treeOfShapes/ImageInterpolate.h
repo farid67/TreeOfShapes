@@ -56,6 +56,9 @@ int priority_pop (std::list<int>* q,T* l);
 template <typename T>
 void priority_push(std::list<int>* q, int h, std::vector<Span<T> > *U,T l );
 
+// affichage de q dans la procédure Sort
+
+void display_q(std::list<int> *q);
 
 #include "ImageInterpolate.hpp"
 

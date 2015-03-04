@@ -13,3 +13,6 @@ HEADERS += \
     ImageInterpolate.h \
     ImageInterpolate.hpp
 
+OTHER_FILES += \
+    Explications.txt
+
