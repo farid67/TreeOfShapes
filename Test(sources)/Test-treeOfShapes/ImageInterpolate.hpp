@@ -250,7 +250,7 @@ void ImageInterpolate<T>::displayImage()
 // SORT procedure
 
 template <typename T>
-void ImageInterpolate<T>::sort(Image<T>* im, std::vector<int>* R)
+void ImageInterpolate<T>::sort(Image<T>* im, std::vector<int>* R, TreeType t)
 {
     std::cout << "entrée dans la procédure Sort " << std::endl;
 
@@ -338,7 +338,7 @@ void ImageInterpolate<T>::sort(Image<T>* im, std::vector<int>* R)
         // pour tout n tel que deja_vu[n] = faux
         for (n = 0; n < nbp; n++)
         {
-            if (!deja_vu[n])
+            if (!deja_vu[n] && isVoisin(n,h,this->getH(),this->getW(),t))
             {
                 priority_push(q,n,U,l);
                 deja_vu[n] = true;
@@ -501,7 +501,7 @@ int priority_pop (std::list<int>* q,T* l)
 // UN_INTERPOLATE procedure
 
 template <typename T>
-int *ImageInterpolate<T>::un_interpolate(int *table)
+int *ImageInterpolate<T>::un_interpolate(int *table, int* corresponding_table)
 {
     // création du tableau qu'on devra renvoyer, pour le moment on a uniquement accès aux dimensions de l'image interpolate
     // équation -> new_h (image interpolate) = 4 * h(image de base) + 7
@@ -513,6 +513,7 @@ int *ImageInterpolate<T>::un_interpolate(int *table)
 
     int *return_tab  = new int [h * w];
 
+//    /*
     int i,j,compteur(0);
 
     for (i= 0;i < this->getH() ;i ++)
@@ -527,10 +528,57 @@ int *ImageInterpolate<T>::un_interpolate(int *table)
                 }
         }
     }
+//    */
 
+
+    /*
+    int tmp(0),compteur(0);
+
+    for (tmp = 0; tmp < this->getH()* this->getW() ; tmp++)
+    {
+        if (corresponding_table[table[tmp]]!= -1 )
+        {
+            return_tab[compteur] = corresponding_table[tmp];
+            compteur ++;
+        }
+    }
+    */
     return return_tab;
 
+}
 
+template <typename T>
+int* ImageInterpolate<T>::corresponding()
+{
+
+    int* correspond_tab = new int[this->getH()*this->getW()];
+
+    int i,j,compteur(0),compteur_true_element(0);
+
+    for (i = 0 ; i < this->getH()* this->getW() ; i ++)
+    {
+        correspond_tab[i] = -1;
+    }
+
+    for (i= 0;i < this->getH() ;i ++)
+    {
+        for (j= 0;j < this->getW();j++)
+        {
+            if (i != 1 && i != this->getH()-2 && j != 1 && j!= this->getW()-2)// pour éviter les bordures
+            {
+                if (((i-1)%4 == 0) && ((j-1)%4 == 0))// pour ne récupérer que les bonnes cases
+                {
+                    correspond_tab[compteur]=  compteur_true_element;
+                    compteur_true_element ++;
+                }
+            }
+            std::cout << correspond_tab[compteur] << " ";
+            compteur ++;
+        }
+        std::cout << std::endl;
+    }
+
+    return correspond_tab;
 }
 
 

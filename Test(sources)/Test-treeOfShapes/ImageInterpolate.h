@@ -35,9 +35,15 @@ public:
 
     // SORT procédure, prend en paramètre une image im qui sera le u(indice b) de l'article
     //-> pour ne pas avoir à renvoyer une structure qui contienne une image et un tableau
-    void sort(Image<T> *im, std::vector<int> *R );
+    void sort(Image<T> *im, std::vector<int> *R , TreeType t);
 
-    int * un_interpolate (int * table);
+    int * un_interpolate (int * table, int* corresponding_table);
+
+
+    // fonction renvoyant un tableau avec pour chaque i tab[i] = offset [i] dans l'image de base ou -1 si i a été
+    // créé lors de l'interpolation -> utilisé pour la phase de un_interpolation
+
+    int * corresponding ();
 
 };
 

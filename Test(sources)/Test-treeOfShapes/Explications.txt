@@ -5,3 +5,14 @@ Coloration syntaxique sur le terminal
 
     -> le texte sera entre ce code asquii et un autre code permettant de faire comprendre au terminal qu'il doit reprendre une
     coloration normale "\033[0m"
+
+
+
+Tri des éléments avec la fonction sortGrayLevel
+
+    Le tableau obtenu ne retour correspond à un tableau avec uniquement un tri des offsets
+
+
+Lecture du tableau parent
+    Pour i allant de 0 à la taille du tableau "parent", on a :
+        (i) = père[parent(i)]

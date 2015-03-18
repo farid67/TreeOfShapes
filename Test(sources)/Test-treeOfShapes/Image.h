@@ -3,6 +3,8 @@
 
 #include "iostream"
 
+enum TreeType {MinTree, MaxTree};
+
 
 template <typename T>
 class Image
@@ -53,8 +55,10 @@ public:
 template <typename T>
 std::ostream& operator << (std::ostream& os,const Image<T>& i );
 
-int* union_find (int* R , int nbPixels);    // paramètre -> le tableau trié en fonction de ce qu'on veut ->
-                                            // pour le max_tree et le min-tree, le tri sera fait en fonction du niveau de gris
+int* union_find (int* R , int nbPixels, TreeType t);    // paramètre -> le tableau trié en fonction de ce qu'on veut ->
+                                                        // pour le max_tree et le min-tree, le tri sera fait en fonction du niveau de gris
+
+bool isVoisin(int n, int p, int h, int w, TreeType t);
 
 int find_root(int* zpar, int n);
 
@@ -63,7 +67,8 @@ int* reverse_order (int* tab_in, int nb_elem);
 
 // fonction pour avoir un arbre avec un seul représentant par noeud
 template <typename T>
-void canonize_tree(int * parent, int nb_elem,const Image <T>& i);
+void canonize_tree(int * parent, int nb_elem,const Image <T>& i, int * r);
+
 
 
 #include "Image.hpp"

@@ -1,3 +1,4 @@
+
 #include <iostream>
 
 #include "Image.h"
@@ -34,10 +35,10 @@ int main()
 
     /*
 
-    // image tirer de l'article "effective component..."
+    // image tirée de l'article "effective component..."
     // ------------------------
     //
-    //
+    //      Image utilisée surtout pour voir le résultat des calculs des max et min tree sur un exemple concret
 
 
     Image <unsigned char> i (2,5);
@@ -53,7 +54,7 @@ int main()
 
     int h(i.getH()),w(i.getW());
 
-    */
+//    */
 
     //                      TESTS CRéTION DES MAX ET MIN-TREE
 
@@ -65,12 +66,13 @@ int main()
 
     int nbP = i.getH() * i.getW();
 
-//    /* -> pour le min-tree ( ne semble pas fonctionner correctement
+//    /* -> Min tree -> connexité 2n
 //     *
 //     *
 
-    // Fonctionne étrangement -> algorithme que j'ai déroulé à la main et qui donne le même resultat lors de l'execution :
-    // à savoir : les éléments sont uniquement chainés en fonction de leur niveau de gris ( a -> b -> c...)
+    /*
+    std::cout << "Tableau obtenu en triant les éléments de l'image en fonction de leur niveau de gris, puis effectuer un reverse sur le tableau" << std::endl;
+
     int *r_reverse = reverse_order(r,nbP);
     for (int i = 0; i < nbP; i++)
     {
@@ -79,9 +81,9 @@ int main()
 
     std::cout << std::endl;
 
+    int* parent =  union_find(r_reverse,h,w,MinTree);
 
-    int* parent =  union_find(r_reverse,nbP);
-
+    std::cout << "retour de la procédure parent" << std::endl;
 
     for (int i = 0; i < nbP; i++)
     {
@@ -89,11 +91,25 @@ int main()
     }
     std::cout << std::endl;
 
-//    */
+    // canonize fonction
 
-    /* -> pour le max-tree -> semble fonctionner correctement
-     *
-     *
+    canonize_tree(parent,nbP,i,r_reverse);
+
+    std::cout << "résultat : tableau parent " << std::endl;
+
+    for (int j = 0 ; j < nbP; j++)
+    {
+        std::cout << parent[j] << " ";
+    }
+    std::cout << std::endl;
+
+    */
+
+    /*
+
+//    /* -> pour le max-tree -> connexité 3^n -1
+//     *
+//     *
     for (int i = 0; i < nbP; i++)
     {
         std::cout << r[i] << " ";
@@ -103,13 +119,22 @@ int main()
 //    std::cout << std::endl;
 
 
-    int * parent = union_find(r,nbP);
+    int * parent = union_find(r,h,w,MaxTree);
 
-    canonize_tree(parent,nbP,i);
+    std::cout << "parent avant canonize :" << std::endl;
 
-    for (int i = 0; i < nbP; i++)
+    for (int j = 0; j < nbP; j++)
     {
-        std::cout << parent[i] << " ";
+        std::cout << parent[j] << " ";
+    }
+    std::cout << std::endl;
+
+
+    canonize_tree(parent,nbP,i,r);
+
+    for (int j = 0; j < nbP; j++)
+    {
+        std::cout << parent[j] << " ";
     }
     std::cout << std::endl;
 
@@ -129,6 +154,8 @@ int main()
 
 //    */
 
+//    /*
+
     // test set-valued map
 
     std::cout << "Construction de la \033[1;35mset-valued map\033[0m à partir de l'image ayant des bordures" <<std::endl;
@@ -136,6 +163,7 @@ int main()
     i.set_valued();
 
     std::cout << i << std::endl;
+
 
     // Attention -> pour la version finale on pourra avoir envie de passer l'image de base en paramètre au constructeur de ImageInterpolate
     // dans ce cas, il faudra faire les opérations add_edge() et set_valued() dans le constructeur
@@ -153,7 +181,7 @@ int main()
     u.displayImage();
 
 
-
+    // dans notre cas test équivaut à l'image u (indice b)
     Image<unsigned char> test;
 
     std::vector<int> r;
@@ -163,10 +191,14 @@ int main()
     // même dimension que l'image interpolée ainsi qu'un tableau R qui contiendra les éléments suivant la relation de parenté que l'on
     // souhaite mettre en place
 
-    u.sort(&test,&r);
+    u.sort(&test,&r,MaxTree);
 
     // affichage
-    std::cout << "affichage de R:" << std::endl;
+    std::cout << std::endl;
+    std::cout << "affichage de R après utilisation de la fonction sort :" << std::endl;
+    std::cout << "\t schématiquement, le parcours de R correspond à un parcours des pixels de l'image en partant des formes les plus externes et en allant"
+                 " vers les formes les plus internes" << std::endl << std::endl;
+
 
     std::vector<int>::iterator it;
     int compteur(0);
@@ -191,9 +223,9 @@ int main()
 
     // pour ne pas avoir de problème de type, on doit passer en paramètre à la fonction union_find un tableau d'entier,
     // or R est dans notre cas un vector<int>, on passe alors le pointeur vers le premier élément du vector ce qui donnera un int*
-    int * parent = union_find(&r[0],nbp);
+    int * parent = union_find(&r[0],test.getH(),test.getW(),MaxTree);
 
-    /*
+//    /*
     std::cout << "affichage du tableau parent : " << std::endl;
 
     int j;
@@ -206,11 +238,11 @@ int main()
         std::cout << parent[j] << " ";
     }
     std::cout << std::endl;
-    */
+//    */
 
-    // canonicalize_tree
+                                         // canonicalize_tree
 
-    canonize_tree(parent,nbp,test);
+    canonize_tree(parent,nbp,test,&r[0]);
 
     /*
 
@@ -228,17 +260,25 @@ int main()
 
     */
 
-
+//    /*
     // un_interpolate(R,parent)
     // -> revient à récupérer l'application inverse de l'interpolation sur R et celle sur parent
 
-    int* R_un_interpolate  = u.un_interpolate(&r[0]);
+    // pour la fonction un_interpolate, on crée un tableau qui prendra en argument un entier correspondant à l'offset
+    // d'un élément dans le tableau de notre choix (R ou parent) et qui renverra l'offset correspondant sur l'image
+    // s'il existe  ou -1 sinon
 
-    int* parent_un_interpolate = u.un_interpolate(parent);
+    int* corresp = u.corresponding ();
+
+    int* R_un_interpolate  = u.un_interpolate(&r[0], corresp);
+
+    int* parent_un_interpolate = u.un_interpolate(parent,corresp);
 
     // affichage des 2 tableaux en fonctions des dimensions de l'image de base -> contenues ici dans h et w
 
     int x,y;
+
+    // problème pour la fonction un_interpolate
 
     std::cout << std::endl << "R final " << std::endl;
 
@@ -262,7 +302,60 @@ int main()
         std::cout << std::endl;
     }
 
+    for (x= 0; x < 10; x++)
+    {
+        std::cout << std::endl;
+    }
+
+    // valeur -> correspond à l'offset du premier pixel de la composante
+//    std::cout << static_cast<int>(test[288]) << std::endl;
+
+//    std::cout << static_cast<int>(test[612]) << std::endl;
+
+
+    /* //Vérification U + standardize + corresponding_table -> ok
+
+    std::cout << "vérification de U " << std::endl;
+
+    u.displayImage();
+    std::vector<Span <unsigned char> > *test_span = u.standardize();
+
+    typename std::vector<Span<unsigned char> >::iterator ite ;
+
+    int compteur_ =0;
+
+    for (ite = test_span->begin(); ite != test_span->end() ;ite++)
+    {
+        if (corresp[compteur_ ] != -1)
+            std::cout << "\033[7m";
+        std::cout << *ite << " ";
+        if (corresp[compteur_ ] != -1)
+            std::cout << "\033[0m";
+        compteur_ ++;
+        if (compteur_ % u.getW() == 0)
+        {
+            std::cout << std::endl;
+        }
+    }
+
+    compteur_ = 0;
+
+
+    for (x = 0; x < u.getH()*u.getW(); x++)
+    {
+        if (corresp[x] != -1)
+        {
+            compteur_ ++;
+            std::cout << test_span->at(x) << " ";
+            if (compteur_%w == 0)
+            std::cout <<std::endl;
+        }
+    }
+
+    std::cout << std::endl;
+    */
 
     return 0;
+//    */
 }
 

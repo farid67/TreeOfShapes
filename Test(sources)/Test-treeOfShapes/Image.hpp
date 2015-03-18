@@ -114,6 +114,8 @@ void Image<T>::setPixels(T *t)
     m_pixels = t;
 }
 
+// tri des pixels en fonction de leur niveau de gris -> le resultat est un tableau contenant les offsets des éléments du plus clair au plus foncé
+
 template <typename T>
 int* Image<T>::sortGrayLevel()
 {
@@ -134,7 +136,7 @@ int* Image<T>::sortGrayLevel()
     for (i= 1; i < nbPixels; i++)
     {
         j = 0;
-        while((*this)[i] <= (*this)[table[j]] && table[j] != -1)
+        while( ((*this)[i] <= (*this)[table[j]]) && table[j] != -1)
         {
             j++;
         }
@@ -160,8 +162,10 @@ int* Image<T>::sortGrayLevel()
 
 //UNION-FIND
 
-int* union_find(int *R, int nbPixels)
+//on utilisera h et w pour vérifier si 2 pixels sont voisins ou non
+int* union_find(int *R, int h, int w, TreeType t)
 {
+    int nbPixels = h * w;
     int* zpar = new int[nbPixels];
     int * parent = new int [nbPixels];
 
@@ -177,14 +181,14 @@ int* union_find(int *R, int nbPixels)
     // for <- N -1 to 0 do
     for (i = nbPixels -1 ; i >= 0 ; i --)
     {
-        p = R[i]; // p <- zpar[i]
+        p = R[i]; // current pixel
         parent[p] = p; // parent[p] <- p
         zpar[p] = p; // zpar[p] <- p
 
         // for all n € N(p) such as zpar(n) != undef
         for (n = 0 ; n < nbPixels ; n++)
         {
-            if (zpar[n] != -1)
+            if (zpar[n] != -1 && isVoisin(n,p,h,w,t))
             {
                 r = find_root(zpar,n);
                 if (r != p)
@@ -203,6 +207,41 @@ int* union_find(int *R, int nbPixels)
     delete[]zpar;
     return parent;
 }
+
+
+// fonction isVoisin (n,p,R,h,w,t)
+
+//n -> offset courant
+//p -> pixel dont on veut connaitre le voisin
+//h -> hauteur de l'image
+//w -> largeur
+//t -> type d'arbre pour la connexité
+
+bool isVoisin(int n, int p, int h , int w , TreeType t)
+{
+
+    switch (t)
+    {
+    case MinTree : // connexité ->
+        if (n/w == p/w)// test sur la même ligne
+            return (n == p-1 || n == p+1);// à droite ou à gauche
+        else return(std::abs(p - n) == w ); // sinon test si n est "juste" au-dessus ou "juste "en-dessous" de p
+        break;
+    case MaxTree :
+        if (n/w == p/w ) // si les 2 pixels sont sur la même ligne
+            return (n == p-1 || n == p+1);
+        if (n/w == p/w -1 )// ligne du dessus
+            return (n == p-w-1 || n == p-w+1 || n == p-w);
+        if (n/w == p/w + 1)
+            return (n == p+w-1 || n == p+w+1 || n == p+w);
+        return false;
+        break;
+    default:
+        return false;
+        break;
+    }
+}
+
 
 // FIND_ROOT
 
@@ -232,16 +271,27 @@ int* reverse_order (int *tab_in, int nb_elem)
 
 // CANONIZE_TREE -> to get the tree with only one represent by node
 template <typename T>
-void canonize_tree(int * parent,int nb_elem, const Image<T> & im)
+void canonize_tree(int * parent,int nb_elem, const Image<T> & im, int * r)
 {
+
+    // modification apportée à la fonction canonize, on la réapplique tant que le résultat n'est pas stable
     int p,q ;
+    bool change = false;
+
     for (p = nb_elem-1 ; p >= 0;p--)
     {
-        q = parent[p];
+        q = parent[r[p]];
         if (im[parent[q]] == im[q])
         {
-            parent[p] = parent[q];
+            if (parent[r[p]] != parent[q])
+                change = true;
+            parent[r[p]] = parent[q];
         }
+    }
+
+    if (change)
+    {
+        canonize_tree(parent,nb_elem,im,r);
     }
 }
 
@@ -438,6 +488,7 @@ void Image<T>::set_valued()
     m_w = new_w;
 
 }
+
 
 
 template <typename T>
