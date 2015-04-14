@@ -45,6 +45,11 @@ public:
 
     int * corresponding ();
 
+
+
+    // fonction qui a chaque élément de R fait correspondre un élément de l'image de base à laquelle on a ajouté une bordure
+    int * corresponding_2();
+
 };
 
 template <typename T>

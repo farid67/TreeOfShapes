@@ -16,3 +16,7 @@ Tri des éléments avec la fonction sortGrayLevel
 Lecture du tableau parent
     Pour i allant de 0 à la taille du tableau "parent", on a :
         (i) = père[parent(i)]
+
+
+
+// problème désinterpolation -> essayer de faire en sorte d'avoir une correspondance avec l'image issue de l'ajout d'une bordure

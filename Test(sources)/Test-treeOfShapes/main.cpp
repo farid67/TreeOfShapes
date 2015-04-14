@@ -26,6 +26,23 @@ int main()
     // 5 ème ligne -> 1 - 1 - 1 - 1 - 1 - 1
     i.setPixel(4,0,1); i.setPixel(4,1,1); i.setPixel(4,2,1); i.setPixel(4,3,1); i.setPixel(4,4,1); i.setPixel(4,5,1);
 
+
+    // même image avec des 2 à la place des 1 qui devrait théoriquement conduire au même résultat ...
+
+//    // 1 ère ligne -> 2 - 2 - 2 - 2 - 2 - 2
+//    i.setPixel(0,0,2); i.setPixel(0,1,2); i.setPixel(0,2,2); i.setPixel(0,3,2); i.setPixel(0,4,2); i.setPixel(0,5,2);
+//    // 2 ème ligne -> 2 - 0 - 0 - 3 - 3 - 2
+//    i.setPixel(1,0,2); i.setPixel(1,1,1); i.setPixel(1,2,1); i.setPixel(1,3,3); i.setPixel(1,4,3); i.setPixel(1,5,2);
+//    // 3 ème ligne -> 2 - 0 - 2 - 2 - 3 - 2
+//    i.setPixel(2,0,2); i.setPixel(2,1,1); i.setPixel(2,2,2); i.setPixel(2,3,2); i.setPixel(2,4,3); i.setPixel(2,5,2);
+//    // 4 ème ligne -> 2 - 0 - 0 - 3 - 3 - 2
+//    i.setPixel(3,0,2); i.setPixel(3,1,1); i.setPixel(3,2,1); i.setPixel(3,3,3); i.setPixel(3,4,3); i.setPixel(3,5,2);
+//    // 5 ème ligne -> 2 - 2 - 2 - 2 - 2 - 2
+//    i.setPixel(4,0,2); i.setPixel(4,1,2); i.setPixel(4,2,2); i.setPixel(4,3,2); i.setPixel(4,4,2); i.setPixel(4,5,2);
+
+
+
+
     int h(i.getH()),w(i.getW());
 
     std::cout << "test " << std::endl;
@@ -138,7 +155,9 @@ int main()
     }
     std::cout << std::endl;
 
-//    */
+    */
+
+//    return 0;
 
 
     //                      TEST INTERPOLATIONs
@@ -148,13 +167,12 @@ int main()
 //    /*
     i.add_edge();
 
+    Image<unsigned char> init (i);
+
     std::cout << "\033[1;32m Image avec bordure : \033[0m" << std::endl;
 
     std::cout << i << std::endl;
 
-//    */
-
-//    /*
 
     // test set-valued map
 
@@ -218,6 +236,36 @@ int main()
 
     std::cout << test << std::endl;
 
+    std::cout << "effectue un test sur le tableau R obtenu en sortie de R : on essaye de récupérer uniquement les éléménts de l'image de base" << std::endl;
+
+    int* corresp_test = u.corresponding_2();
+
+    std::vector <int> r_clean ; // version désinterpoler de r qui semble être correct
+
+    compteur = 0;
+    int compt_2(0);
+    for (it = r.begin();it != r.end(); it++)
+    {
+        if (corresp_test[*it] != -1)
+        {
+            std::cout << corresp_test[*it] << " ";
+            compteur ++;
+
+            // on ajoute chaque élément que l'on souhaite à r_clean
+            r_clean.push_back(corresp_test[*it]);
+
+        }
+        if (compteur == w+2)
+        {
+            compteur =0;
+            std::cout << std::endl;
+        }
+        compt_2++;
+    }
+
+
+
+
     //  application de la fonction union_find sur R qui est un des retours de la fonction sort
     int nbp = test.getH() * test.getW();
 
@@ -225,7 +273,24 @@ int main()
     // or R est dans notre cas un vector<int>, on passe alors le pointeur vers le premier élément du vector ce qui donnera un int*
     int * parent = union_find(&r[0],test.getH(),test.getW(),MaxTree);
 
-//    /*
+    // on effectue une autre version de parent avec un union-find que l'on applique à r_clean, il faut encore modifier les dimensions
+    // et donner celles de l'image de départ avec les bordures (h+2) et (w+2)
+
+    int *parent_clean = union_find(&r_clean[0],h+2,w+2,MaxTree);
+
+    std::cout << "test tableau de correspondance_2 (vérifier que les éléments du tableau parent sont issus de l'image de départ) " << std::endl;
+
+    std::cout << std::endl;
+
+
+
+    int compt(0);
+
+    for (compt = 0; compt < u.getH()*u.getW() ; compt++)
+        if (corresp_test[compt] != -1)
+            std::cout << "n° " << corresp_test[compt] << " : " << compt << std::endl;
+
+
     std::cout << "affichage du tableau parent : " << std::endl;
 
     int j;
@@ -238,13 +303,41 @@ int main()
         std::cout << parent[j] << " ";
     }
     std::cout << std::endl;
-//    */
+
+
+    std::cout << "affichage du tableau parent_clean : " << std::endl;
+
+    for (j=0; j < (h+2)*(w+2); j++)
+    {
+        if (j%(w+2) == 0)
+        {
+            std::cout << std::endl;
+        }
+        std::cout << parent_clean[j] << " ";
+    }
+    std::cout << std::endl;
+
+
+    // init a été créée plus haut comme étant la copie de l'image de base à laquelle on a ajouté les bordures
+    canonize_tree(parent_clean,(h+2)*(w+2),init,&r_clean[0]);
 
                                          // canonicalize_tree
+    std::cout << "parent_clean (canonicalize version): "<<std::endl;
+
+    for (j=0; j < (h+2)*(w+2); j++)
+    {
+        if (j%(w+2) == 0)
+        {
+            std::cout << std::endl;
+        }
+        std::cout << parent_clean[j] << " ";
+    }
+    std::cout << std::endl;
+
+
 
     canonize_tree(parent,nbp,test,&r[0]);
 
-    /*
 
     std::cout << "affichage du tableau parent (canonicalize version): " << std::endl;
 
@@ -258,7 +351,6 @@ int main()
     }
     std::cout << std::endl;
 
-    */
 
 //    /*
     // un_interpolate(R,parent)
@@ -268,9 +360,11 @@ int main()
     // d'un élément dans le tableau de notre choix (R ou parent) et qui renverra l'offset correspondant sur l'image
     // s'il existe  ou -1 sinon
 
-    int* corresp = u.corresponding ();
+    int* corresp = u.corresponding_2 ();
 
-    int* R_un_interpolate  = u.un_interpolate(&r[0], corresp);
+
+    // pour r_un_interpolate -> prendre la version du dessus avec uniquement les bons éléments gardés lors du parcours de R
+//    int* R_un_interpolate  = u.un_interpolate(&r[0], corresp);
 
     int* parent_un_interpolate = u.un_interpolate(parent,corresp);
 
@@ -279,17 +373,20 @@ int main()
     int x,y;
 
     // problème pour la fonction un_interpolate
+    // WARNING -> modification de la dimension pour l'affichage,on prend les valeurs de l'image de base avec ajout de bordure pour les dimensions
+    h +=2;
+    w +=2;
 
-    std::cout << std::endl << "R final " << std::endl;
+//    std::cout << std::endl << "R final " << std::endl;
 
-    for(x = 0; x < h; x++)
-    {
-        for (y = 0; y < w; y++)
-        {
-            std::cout << R_un_interpolate[x*w + y] << " ";
-        }
-        std::cout << std::endl;
-    }
+//    for(x = 0; x < h; x++)
+//    {
+//        for (y = 0; y < w; y++)
+//        {
+//            std::cout << R_un_interpolate[x*w + y] << " ";
+//        }
+//        std::cout << std::endl;
+//    }
 
     std::cout << std::endl << "parent final"<< std::endl;
 
@@ -354,6 +451,8 @@ int main()
 
     std::cout << std::endl;
     */
+
+//    std::cout << static_cast<int>(test[232]) << std::endl;
 
     return 0;
 //    */
