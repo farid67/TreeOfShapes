@@ -559,6 +559,10 @@ int *ImageInterpolate<T>::un_interpolate(int *table, int* corresponding_table)
 
 }
 
+
+// WARNING!
+// Fonction obsolète -> l'image de base ne correspond pas à celle qui est fournie à l'algorithme départ mais à celle qui
+// est obtenue après l'ajout d'une bordure
 template <typename T>
 int* ImageInterpolate<T>::corresponding()
 {

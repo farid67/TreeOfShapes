@@ -310,7 +310,8 @@ T Image<T>::median_edge_value()
     int size(2*h+ 2*(w-2)),compteur(0);
     T tmp[size];
 
-    for (i = 0; i < w; i ++)
+    // si on ne prend pas les 4 coins de l'image on ne va que de 1 à la largeur moins 1 pixel
+    for (i = 1; i < w-1; i ++)
     {
         tmp[compteur] = getPixel(0,i);
         tmp[compteur+1] = getPixel(h-1,i);

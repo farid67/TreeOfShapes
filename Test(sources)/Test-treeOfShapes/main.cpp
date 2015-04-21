@@ -30,17 +30,23 @@ int main()
     // même image avec des 2 à la place des 1 qui devrait théoriquement conduire au même résultat ...
 
 //    // 1 ère ligne -> 2 - 2 - 2 - 2 - 2 - 2
-//    i.setPixel(0,0,2); i.setPixel(0,1,2); i.setPixel(0,2,2); i.setPixel(0,3,2); i.setPixel(0,4,2); i.setPixel(0,5,2);
+//    i.setPixel(0,0,5); i.setPixel(0,1,5); i.setPixel(0,2,5); i.setPixel(0,3,5); i.setPixel(0,4,5); i.setPixel(0,5,5);
 //    // 2 ème ligne -> 2 - 0 - 0 - 3 - 3 - 2
-//    i.setPixel(1,0,2); i.setPixel(1,1,1); i.setPixel(1,2,1); i.setPixel(1,3,3); i.setPixel(1,4,3); i.setPixel(1,5,2);
+//    i.setPixel(1,0,5); i.setPixel(1,1,1); i.setPixel(1,2,1); i.setPixel(1,3,9); i.setPixel(1,4,9); i.setPixel(1,5,5);
 //    // 3 ème ligne -> 2 - 0 - 2 - 2 - 3 - 2
-//    i.setPixel(2,0,2); i.setPixel(2,1,1); i.setPixel(2,2,2); i.setPixel(2,3,2); i.setPixel(2,4,3); i.setPixel(2,5,2);
+//    i.setPixel(2,0,5); i.setPixel(2,1,1); i.setPixel(2,2,5); i.setPixel(2,3,5); i.setPixel(2,4,9); i.setPixel(2,5,5);
 //    // 4 ème ligne -> 2 - 0 - 0 - 3 - 3 - 2
-//    i.setPixel(3,0,2); i.setPixel(3,1,1); i.setPixel(3,2,1); i.setPixel(3,3,3); i.setPixel(3,4,3); i.setPixel(3,5,2);
+//    i.setPixel(3,0,5); i.setPixel(3,1,1); i.setPixel(3,2,1); i.setPixel(3,3,9); i.setPixel(3,4,9); i.setPixel(3,5,5);
 //    // 5 ème ligne -> 2 - 2 - 2 - 2 - 2 - 2
-//    i.setPixel(4,0,2); i.setPixel(4,1,2); i.setPixel(4,2,2); i.setPixel(4,3,2); i.setPixel(4,4,2); i.setPixel(4,5,2);
+//    i.setPixel(4,0,5); i.setPixel(4,1,5); i.setPixel(4,2,5); i.setPixel(4,3,5); i.setPixel(4,4,5); i.setPixel(4,5,5);
 
+            //      AUTRE EXEMPLE (ne pas prendre en compte lors de la lecture
+    // autre exemple d'image -> la même que celle de base mais en retirant la bordure avec les pixels ayant un niveau de gris à 1
 
+//    Image<unsigned char> i(3,4);
+//    i.setPixel(0,0,0); i.setPixel(0,1,0); i.setPixel(0,2,3); i.setPixel(0,3,3);
+//    i.setPixel(1,0,0); i.setPixel(1,1,4); i.setPixel(1,2,4); i.setPixel(1,3,3);
+//    i.setPixel(2,0,0); i.setPixel(2,1,0); i.setPixel(2,2,3); i.setPixel(2,3,3);
 
 
     int h(i.getH()),w(i.getW());
@@ -77,18 +83,61 @@ int main()
 
     /*
     int* r = i.sortGrayLevel();
+    // test avec le reverse_order
+
+
 
     // tri croissant sur le niveau de gris, si on donne ce tableau en paramètre de la fonction union_find, on aura en sortie le min-tree
     // -> pour avoir le max_tree on doit faire un reverse_order sur ce tableau
 
     int nbP = i.getH() * i.getW();
 
+
+
 //    /* -> Min tree -> connexité 2n
 //     *
 //     *
 
     /*
-    std::cout << "Tableau obtenu en triant les éléments de l'image en fonction de leur niveau de gris, puis effectuer un reverse sur le tableau" << std::endl;
+
+    for (int i = 0; i < nbP; i++)
+    {
+        std::cout << r[i] << " ";
+    }
+
+    std::cout << std::endl;
+//    std::cout << std::endl;
+
+
+    int * parent = union_find(r,h,w,MinTree);
+
+    std::cout << "parent avant canonize :" << std::endl;
+
+    for (int j = 0; j < nbP; j++)
+    {
+        std::cout << parent[j] << " ";
+    }
+    std::cout << std::endl;
+
+
+    canonize_tree(parent,nbP,i,r);
+
+    for (int j = 0; j < nbP; j++)
+    {
+        std::cout << parent[j] << " ";
+    }
+    std::cout << std::endl;
+
+
+
+    */
+
+    /*
+
+//    /* -> pour le max-tree -> connexité 3^n -1
+//     *
+//     *
+
 
     int *r_reverse = reverse_order(r,nbP);
     for (int i = 0; i < nbP; i++)
@@ -98,7 +147,7 @@ int main()
 
     std::cout << std::endl;
 
-    int* parent =  union_find(r_reverse,h,w,MinTree);
+    int* parent =  union_find(r_reverse,h,w,MaxTree);
 
     std::cout << "retour de la procédure parent" << std::endl;
 
@@ -120,42 +169,8 @@ int main()
     }
     std::cout << std::endl;
 
-    */
+//    */
 
-    /*
-
-//    /* -> pour le max-tree -> connexité 3^n -1
-//     *
-//     *
-    for (int i = 0; i < nbP; i++)
-    {
-        std::cout << r[i] << " ";
-    }
-
-    std::cout << std::endl;
-//    std::cout << std::endl;
-
-
-    int * parent = union_find(r,h,w,MaxTree);
-
-    std::cout << "parent avant canonize :" << std::endl;
-
-    for (int j = 0; j < nbP; j++)
-    {
-        std::cout << parent[j] << " ";
-    }
-    std::cout << std::endl;
-
-
-    canonize_tree(parent,nbP,i,r);
-
-    for (int j = 0; j < nbP; j++)
-    {
-        std::cout << parent[j] << " ";
-    }
-    std::cout << std::endl;
-
-    */
 
 //    return 0;
 
@@ -276,7 +291,7 @@ int main()
     // on effectue une autre version de parent avec un union-find que l'on applique à r_clean, il faut encore modifier les dimensions
     // et donner celles de l'image de départ avec les bordures (h+2) et (w+2)
 
-    int *parent_clean = union_find(&r_clean[0],h+2,w+2,MaxTree);
+    int *parent_clean = union_find(&r_clean[0],h+2,w+2,MinTree);
 
     std::cout << "test tableau de correspondance_2 (vérifier que les éléments du tableau parent sont issus de l'image de départ) " << std::endl;
 

@@ -40,6 +40,9 @@ public:
     int * un_interpolate (int * table, int* corresponding_table);
 
 
+
+    // WARNING : fonction obsolète (cf explication dans le .hpp)
+
     // fonction renvoyant un tableau avec pour chaque i tab[i] = offset [i] dans l'image de base ou -1 si i a été
     // créé lors de l'interpolation -> utilisé pour la phase de un_interpolation
 
