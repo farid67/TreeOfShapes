@@ -11,7 +11,11 @@ HEADERS += \
     Span.h \
     Span.hpp \
     ImageInterpolate.h \
-    ImageInterpolate.hpp
+    ImageInterpolate.hpp \
+    Node.h \
+    Node.hpp \
+    Tree.h \
+    Tree.hpp
 
 OTHER_FILES += \
     Explications.txt

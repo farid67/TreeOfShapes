@@ -491,6 +491,91 @@ void Image<T>::set_valued()
 }
 
 
+template <typename T>
+int* Image<T>::computeMinTree()
+{
+    // on commence par trier l'image en fonction du niveau de gris
+    // le tableau obtenu sera une liste d'offset, du pixel le plus clair au pixel le plus sombre
+
+    int *r = sortGrayLevel();
+
+    //calcul le nombre de pixels de l'image
+    int nbP = getH() * getW();
+
+    int* parent = union_find(r,getH(),getW(),MinTree);
+
+    canonize_tree(parent,nbP,*this,r);
+
+    return parent;
+}
+
+
+template <typename T>
+int* Image<T>::computeMaxTree()
+{
+    //calcul le nombre de pixels de l'image
+    int nbP = getH() * getW();
+
+
+    int *r = reverse_order(sortGrayLevel(),nbP);
+
+
+
+    int* parent = union_find(r,getH(),getW(),MaxTree);
+
+    canonize_tree(parent,nbP,*this,r);
+
+    return parent;
+}
+
+template <typename T>
+void Image<T>::afficheNode(Node *n)
+{
+    int x,y;
+    int current_offset=0;
+    for (x = 0; x < getH(); x++)
+    {
+        for (y =0; y < getW(); y ++)
+        {
+            if (n->contains(current_offset))
+            {
+                // test si c'est la racine
+                if (n->getOffsetRoot() == current_offset)
+                {
+                    std::cout << "\033[1;41m" << static_cast<int>(getPixel(x,y)) << "\033[0m "; // background red
+                }
+                //
+                else
+                {
+                    std::cout << "\033[1;31m" << static_cast<int>(getPixel(x,y)) << "\033[0m ";
+                }
+            }
+            else
+            {
+                std::cout << static_cast<int>(getPixel(x,y)) << " ";
+            }
+            current_offset++;
+        }
+        std::cout << std::endl;
+    }
+    std::cout << std::endl;
+}
+
+template <typename T>
+void Image<T>::afficheTree(Tree *t)
+{
+    if (t->getName()->size()>0)
+        std::cout << "Arbre : " << *(t->getName()) << "\n";
+    Node* tmp = t->getTreeRoot();
+    afficheNode(tmp);
+    std::vector<Node*>::iterator it;
+    for (it= tmp->getSons()->begin();it != tmp->getSons()->end(); it++)
+    {
+        Tree* new_tree = new Tree(*it);
+        afficheTree(new_tree);
+    }
+}
+
 
 template <typename T>
 std::ostream & operator<< (std::ostream& os, const Image<T>& i)

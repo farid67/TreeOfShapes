@@ -2,6 +2,7 @@
 #define IMAGE_H
 
 #include "iostream"
+#include "Tree.h"
 
 enum TreeType {MinTree, MaxTree};
 
@@ -50,12 +51,20 @@ public:
 
     void set_valued (); // fonction prennant l'image de base et la complétant en ajoutant les lignes et les colonnes nécessaire pour avoir la set-valued map
 
+    int* computeMinTree();// fonction globale calculant le min tree de l'image courante
+
+    int* computeMaxTree();
+
+    void afficheNode(Node* n);// affiche les différentes composantes connexes de l'image
+
+    void afficheTree(Tree* t);// affiche toutes les composantes sur l'image avec les liens de parenté
+
 };
 
 template <typename T>
 std::ostream& operator << (std::ostream& os,const Image<T>& i );
 
-int* union_find (int* R , int nbPixels, TreeType t);    // paramètre -> le tableau trié en fonction de ce qu'on veut ->
+int* union_find (int* R , int h, int w, TreeType t);    // paramètre -> le tableau trié en fonction de ce qu'on veut ->
                                                         // pour le max_tree et le min-tree, le tri sera fait en fonction du niveau de gris
 
 bool isVoisin(int n, int p, int h, int w, TreeType t);

@@ -5,6 +5,8 @@
 #include "Span.h"
 #include "ImageInterpolate.h"
 
+#include "Node.h"
+#include "Tree.h"
 
 int main()
 {
@@ -81,105 +83,34 @@ int main()
 
     //                      TESTS CRéTION DES MAX ET MIN-TREE
 
-    /*
-    int* r = i.sortGrayLevel();
-    // test avec le reverse_order
-
-
-
-    // tri croissant sur le niveau de gris, si on donne ce tableau en paramètre de la fonction union_find, on aura en sortie le min-tree
-    // -> pour avoir le max_tree on doit faire un reverse_order sur ce tableau
 
     int nbP = i.getH() * i.getW();
 
 
 
-//    /* -> Min tree -> connexité 2n
-//     *
-//     *
-
-    /*
-
-    for (int i = 0; i < nbP; i++)
-    {
-        std::cout << r[i] << " ";
-    }
-
-    std::cout << std::endl;
-//    std::cout << std::endl;
+    //-> Min tree -> connexité 2n
 
 
-    int * parent = union_find(r,h,w,MinTree);
+    int* parent_minTree = i.computeMinTree();
 
-    std::cout << "parent avant canonize :" << std::endl;
+    Tree*min_tree = new Tree(parent_minTree,nbP,std::string("MinTree"));
 
-    for (int j = 0; j < nbP; j++)
-    {
-        std::cout << parent[j] << " ";
-    }
-    std::cout << std::endl;
+    std::cout << *min_tree << std::endl;
 
+    // -> pour le max-tree -> connexité 3^n -1
 
-    canonize_tree(parent,nbP,i,r);
+    int* parent_maxTree = i.computeMaxTree();
 
-    for (int j = 0; j < nbP; j++)
-    {
-        std::cout << parent[j] << " ";
-    }
-    std::cout << std::endl;
+    Tree*max_tree = new Tree(parent_maxTree,nbP,std::string("MaxTree"));
 
+    std::cout << *max_tree << std::endl;
 
-
-    */
-
-    /*
-
-//    /* -> pour le max-tree -> connexité 3^n -1
-//     *
-//     *
-
-
-    int *r_reverse = reverse_order(r,nbP);
-    for (int i = 0; i < nbP; i++)
-    {
-        std::cout << r_reverse[i] << " ";
-    }
-
-    std::cout << std::endl;
-
-    int* parent =  union_find(r_reverse,h,w,MaxTree);
-
-    std::cout << "retour de la procédure parent" << std::endl;
-
-    for (int i = 0; i < nbP; i++)
-    {
-        std::cout << parent[i] << " ";
-    }
-    std::cout << std::endl;
-
-    // canonize fonction
-
-    canonize_tree(parent,nbP,i,r_reverse);
-
-    std::cout << "résultat : tableau parent " << std::endl;
-
-    for (int j = 0 ; j < nbP; j++)
-    {
-        std::cout << parent[j] << " ";
-    }
-    std::cout << std::endl;
-
-//    */
-
-
-//    return 0;
 
 
     //                      TEST INTERPOLATIONs
 
     // test ajout d'une bordure -> fonctionnel
 
-//    /*
     i.add_edge();
 
     Image<unsigned char> init (i);
@@ -335,6 +266,17 @@ int main()
 
     // init a été créée plus haut comme étant la copie de l'image de base à laquelle on a ajouté les bordures
     canonize_tree(parent_clean,(h+2)*(w+2),init,&r_clean[0]);
+
+    Tree* treeOfShapes = new Tree (parent_clean,(h+2)*(w+2),"Tree of Shapes");
+    std::cout << *treeOfShapes;
+
+//    init.afficheNode(treeOfShapes->getTreeRoot());
+//    std::cout << std::endl;
+//    init.afficheNode(treeOfShapes->getTreeRoot()->getSons()->at(0));
+//    std::cout << std::endl;
+//    init.afficheNode(treeOfShapes->getTreeRoot()->getSons()->at(0)->getSons()->at(0));
+
+    init.afficheTree(treeOfShapes);
 
                                          // canonicalize_tree
     std::cout << "parent_clean (canonicalize version): "<<std::endl;
