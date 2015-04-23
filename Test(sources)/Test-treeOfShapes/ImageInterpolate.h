@@ -37,21 +37,12 @@ public:
     //-> pour ne pas avoir à renvoyer une structure qui contienne une image et un tableau
     void sort(Image<T> *im, std::vector<int> *R , TreeType t);
 
-    int * un_interpolate (int * table, int* corresponding_table);
+    int * R_un_interpolate (int * table, int* corresponding_table);
 
-
-
-    // WARNING : fonction obsolète (cf explication dans le .hpp)
-
-    // fonction renvoyant un tableau avec pour chaque i tab[i] = offset [i] dans l'image de base ou -1 si i a été
-    // créé lors de l'interpolation -> utilisé pour la phase de un_interpolation
-
-    int * corresponding ();
-
-
+    int * parent_un_interpolate (int* table ,int* corresponding_table );
 
     // fonction qui a chaque élément de R fait correspondre un élément de l'image de base à laquelle on a ajouté une bordure
-    int * corresponding_2();
+    int * corresponding();
 
 };
 

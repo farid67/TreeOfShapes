@@ -252,7 +252,6 @@ void ImageInterpolate<T>::displayImage()
 template <typename T>
 void ImageInterpolate<T>::sort(Image<T>* im, std::vector<int>* R, TreeType t)
 {
-    std::cout << "entrée dans la procédure Sort " << std::endl;
 
     //                  INITIALISATIONS
 
@@ -268,9 +267,6 @@ void ImageInterpolate<T>::sort(Image<T>* im, std::vector<int>* R, TreeType t)
     // q sera un tableau de 255 listes contenant des entiers (les offsets de l'image U)
     // 255 listes pour avoir une liste par niveau de gris
     std::list<int> * q = new std::list<int>[256];
-
-    if (is_empty(q))
-        std::cout << "q a correctement été construite, pour chaque valeur de 0 à 256 les listes sont bien vides" << std::endl;
 
 
                                                         // creation de deja_vu
@@ -499,21 +495,11 @@ int priority_pop (std::list<int>* q,T* l)
     return return_val;
 }
 
-// UN_INTERPOLATE procedure
+// UN_INTERPOLATE procedure pour le tableau R
 
 template <typename T>
-int *ImageInterpolate<T>::un_interpolate(int *table, int* corresponding_table)
+int *ImageInterpolate<T>::R_un_interpolate(int *table, int* corresponding_table)
 {
-    // Si l'image de base est celle sans l'ajout de la bordure on a
-
-    // création du tableau qu'on devra renvoyer, pour le moment on a uniquement accès aux dimensions de l'image interpolate
-    // équation -> new_h (image interpolate) = 4 * h(image de base) + 7
-
-//    int h = (this->getH()-7) / 4;
-//    int w = (this->getW()-7) / 4;
-
-
-    // Sinon on a
 
     // si on considère que l'image de base est l'image à laquelle on a ajouté une bordure, l'équation est la suivante:
     // new_h (image interpolate =  4 * h (image de base) -1
@@ -521,86 +507,63 @@ int *ImageInterpolate<T>::un_interpolate(int *table, int* corresponding_table)
     int h = (this->getH() +1) / 4;
     int w = (this->getW() +1) / 4;
 
-    std::cout << "dimension du tableau " << h << "*"<< w << std::endl;
+    int *return_tab = new int[h*w];
 
-    int *return_tab  = new int [h * w];
+    int i,j;
 
-//    /*
-    int i,j,compteur(0);
+    int current_offset(0),current_tab_offset(0);
 
     for (i= 0;i < this->getH() ;i ++)
     {
         for (j= 0;j < this->getW();j++)
         {
-//            if (i != 1 && i != this->getH()-2 && j != 1 && j!= this->getW()-2)// pour éviter les bordures
-                if (((i-1)%4 == 0) && ((j-1)%4 == 0))// pour ne récupérer que les bonnes cases
+
+                if (corresponding_table[table[current_offset]] != -1)
                 {
-                    return_tab[compteur]= corresponding_table[table[i*this->getW() +j]];
-                    compteur ++;
+                    return_tab[current_tab_offset]=corresponding_table[table[current_offset]];
+                    current_tab_offset ++;
                 }
+                current_offset++;
         }
     }
-//    */
-
-
-    /*
-    int tmp(0),compteur(0);
-
-    for (tmp = 0; tmp < this->getH()* this->getW() ; tmp++)
-    {
-        if (corresponding_table[table[tmp]]!= -1 )
-        {
-            return_tab[compteur] = corresponding_table[tmp];
-            compteur ++;
-        }
-    }
-    */
     return return_tab;
 
 }
 
-
-// WARNING!
-// Fonction obsolète -> l'image de base ne correspond pas à celle qui est fournie à l'algorithme départ mais à celle qui
-// est obtenue après l'ajout d'une bordure
 template <typename T>
-int* ImageInterpolate<T>::corresponding()
+int* ImageInterpolate<T>::parent_un_interpolate(int *table, int *corresponding_table)
 {
+    int h = (this->getH() +1) / 4;
+    int w = (this->getW() +1) / 4;
 
-    int* correspond_tab = new int[this->getH()*this->getW()];
+//    std::cout << "dimension du tableau " << h << "*"<< w << std::endl;
 
-    int i,j,compteur(0),compteur_true_element(0);
+    int *return_tab = new int[h*w];
 
-    for (i = 0 ; i < this->getH()* this->getW() ; i ++)
-    {
-        correspond_tab[i] = -1;
-    }
+    int i,j;
+
+    int current_offset(0),current_tab_offset(0);
 
     for (i= 0;i < this->getH() ;i ++)
     {
         for (j= 0;j < this->getW();j++)
         {
-            if (i != 1 && i != this->getH()-2 && j != 1 && j!= this->getW()-2)// pour éviter les bordures
-            {
-                if (((i-1)%4 == 0) && ((j-1)%4 == 0))// pour ne récupérer que les bonnes cases
+                if (corresponding_table[current_offset] != -1)
                 {
-                    correspond_tab[compteur]=  compteur_true_element;
-                    compteur_true_element ++;
+                    return_tab[current_tab_offset]= corresponding_table[table[current_offset]];
+                    current_tab_offset ++;
                 }
-            }
-            std::cout << correspond_tab[compteur] << " ";
-            compteur ++;
+                current_offset++;
         }
-        std::cout << std::endl;
     }
-
-    return correspond_tab;
+    return &return_tab[0];
 }
+
 
 // fonction à utiliser pour récupérer une correspondance avec l'image de base à laquelle on a ajoutée une bordure
 
 template <typename T>
-int* ImageInterpolate<T>::corresponding_2()
+int* ImageInterpolate<T>::corresponding()
 {
     int* corresponding_tab = new int [this->getH() * this->getW()];
 

@@ -1,6 +1,7 @@
 #ifndef IMAGE_HPP
 #define IMAGE_HPP
 
+#include "ImageInterpolate.h"
 #include "cassert"
 #include "Image.h"
 #include "math.h"
@@ -166,7 +167,8 @@ int* Image<T>::sortGrayLevel()
 int* union_find(int *R, int h, int w, TreeType t)
 {
     int nbPixels = h * w;
-    int* zpar = new int[nbPixels];
+
+    int* zpar= new int [nbPixels];
     int * parent = new int [nbPixels];
 
     int i,n,p,r;
@@ -200,11 +202,8 @@ int* union_find(int *R, int h, int w, TreeType t)
         }
 
     }
-//    for (i = 0; i < nbPixels; i++)
-//    {
-//        std::cout << zpar[i] << " ";
-//    }
     delete[]zpar;
+
     return parent;
 }
 
@@ -408,6 +407,16 @@ void Image<T>::set_valued()
     T* set_val = new T [new_h * new_w];
 
     int i, j ;
+    // init de chaque case à 0;
+    for (i  = 0;i < new_h;i ++)
+    {
+        for (j = 0; j < new_w; j++)
+        {
+            set_val[i*new_w + j] = static_cast<T>(0);
+        }
+    }
+
+
     int val;
 
     for (i  = 0;i < new_h;i ++)
@@ -490,6 +499,17 @@ void Image<T>::set_valued()
 
 }
 
+template <typename T>
+Image<T>* set_valuedMap(const Image<T>& i)
+{
+    // création de la nouvelle image
+    Image<T>* returned_image = new Image<T>(i);
+
+    returned_image->set_valued();
+
+    return returned_image;
+}
+
 
 template <typename T>
 int* Image<T>::computeMinTree()
@@ -527,6 +547,108 @@ int* Image<T>::computeMaxTree()
 
     return parent;
 }
+
+template <typename T>
+int* Image<T>::computeTreeOfShapes()
+{
+    // dans cette fonction on suit exactement ce qui a été fait dans l'article
+
+    // on ajoute une bordure externe à l'image courante
+    Image<T> init (*this);
+    init.add_edge();
+
+    // this sera toujours l'image de base avec la bordure externe
+    // on effectue ensuite la set_valued map sur cette image
+    Image<T>* set_valuedIm = set_valuedMap(static_cast<const Image<T>&>(init));
+
+    // on passe à la représentation de l'image suivant la grille de Khalimsky (interpolation fonction)
+
+    ImageInterpolate<T> u (*set_valuedIm);
+
+    // affichage de la légende ainsi que l'image Interpolate (avec couleurs pour y voir quelque chose)
+
+    displayLegend();
+    u.displayImage();
+
+    // on crée ensuite l'image U exposant b qui contiendra le résultat de la procédure sort
+    Image<T> u_b;
+    // et r qui contiendra également le résultat de la procédure sort
+    std::vector<int> r;
+
+    u.sort(&u_b,&r,MinTree);// le type d'arbre ne change pas l'arbre obtenu (ce qui est modifié est le sens de parcour des pixels)
+
+    int *parent = union_find(&r[0],u_b.getH(),u_b.getW(),MinTree); //UNION-FIND
+
+    canonize_tree(parent,u_b.getH()*u_b.getW(),u_b,&r[0]); // canonize_tree
+
+    // PHASE de DESINTERPOLATION
+
+    // création du tableau de correspondance entre les éléments de l'image interpolate et l'image de base
+    // tableau donne -1 si le pixel a été crée durant la phase d'interpolation et l'offset correspondant dans l'image de base sinon
+
+    int*corresponding_table = u.corresponding();
+
+
+    int* r_clean = u.R_un_interpolate(&r[0],corresponding_table);
+
+
+//    displayTable(r_clean,init->getH(),init->getW());
+
+    int * parent_clean = u.parent_un_interpolate(parent,corresponding_table);
+
+    return parent_clean;
+
+}
+
+template <typename T>
+int* Image<T>::computeTOS_perso()
+{
+    //les premières étapes sont les mêmes
+    // on ajoute une bordure externe à l'image courante
+    Image<T> init(*this);
+    init.add_edge();
+
+
+    // this sera toujours l'image de base avec la bordure externe
+    // on effectue ensuite la set_valued map sur cette image
+    Image<T>* set_valuedIm = set_valuedMap(static_cast<const Image<T>&>(init));
+
+
+    // on passe à la représentation de l'image suivant la grille de Khalimsky (interpolation fonction)
+
+    ImageInterpolate<T> u (*set_valuedIm);
+
+    // affichage de la légende ainsi que l'image Interpolate (avec couleurs pour y voir quelque chose)
+
+    displayLegend();
+    u.displayImage();
+
+    // on crée ensuite l'image U exposant b qui contiendra le résultat de la procédure sort
+    Image<T> u_b;
+    // et r qui contiendra également le résultat de la procédure sort
+    std::vector<int> r;
+
+    u.sort(&u_b,&r,MinTree);// le type d'arbre ne change pas l'arbre obtenu (ce qui est modifié est le sens de parcour des pixels)
+
+    // ici on choisi de commencer par effectuer la désinterpolation de R qui donne un résultat correct sur les tests
+    // -> r_clean correspond bien à un parcours en profondeur de l'arbre des formes
+
+    int* corresponding_table = u.corresponding();
+
+    int * r_clean = u.R_un_interpolate(&r[0],corresponding_table);
+
+    // on effectue le union-find sur CE TABLEAU (r_clean)
+
+    int* parent_clean = union_find(r_clean,init.getH(),init.getW(),MinTree);
+
+    // on effectue la canonization maintenant
+
+    canonize_tree(parent_clean,init.getH()*init.getW(),init,r_clean);
+
+    return parent_clean;
+}
+
+
 
 template <typename T>
 void Image<T>::afficheNode(Node *n)
@@ -591,6 +713,25 @@ std::ostream & operator<< (std::ostream& os, const Image<T>& i)
     }
 
     return os;
+}
+
+
+// afficher tous types de tableau, parent ou r avec le même format que l'image pour essayer d'y voir quelque chose
+void displayTable(int* table, int h, int w)
+{
+    std::cout << std::endl;
+
+    int x(0),y(0);
+    for(x = 0; x < h; x++)
+    {
+        for (y = 0; y < w; y++)
+        {
+            std::cout << table[x*w + y] << " ";
+        }
+        std::cout << std::endl;
+    }
+
+    std::cout << std::endl;
 }
 
 

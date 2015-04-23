@@ -51,6 +51,9 @@ public:
 
     void set_valued (); // fonction prennant l'image de base et la complétant en ajoutant les lignes et les colonnes nécessaire pour avoir la set-valued map
 
+    // on fait également une version de set_valued qui renvoie une image et ne modifie pas l'image courante
+    // cf fonction en-dehors de la classe
+
     int* computeMinTree();// fonction globale calculant le min tree de l'image courante
 
     int* computeMaxTree();
@@ -59,12 +62,17 @@ public:
 
     void afficheTree(Tree* t);// affiche toutes les composantes sur l'image avec les liens de parenté
 
+
+    int* computeTreeOfShapes();// fonction qui est censé calculer l'arbre de parenté de l'image courante en suivant l'agorithme de l'article
+
+    int* computeTOS_perso(); // fonction qui compute le TOS mais en modifiant l'ordre des étapes de l'algorithme
+
 };
 
 template <typename T>
 std::ostream& operator << (std::ostream& os,const Image<T>& i );
 
-int* union_find (int* R , int h, int w, TreeType t);    // paramètre -> le tableau trié en fonction de ce qu'on veut ->
+int* union_find (const int *R , int h, int w, TreeType t);    // paramètre -> le tableau trié en fonction de ce qu'on veut ->
                                                         // pour le max_tree et le min-tree, le tri sera fait en fonction du niveau de gris
 
 bool isVoisin(int n, int p, int h, int w, TreeType t);
@@ -78,6 +86,11 @@ int* reverse_order (int* tab_in, int nb_elem);
 template <typename T>
 void canonize_tree(int * parent, int nb_elem,const Image <T>& i, int * r);
 
+template <typename T>
+Image<T>* set_valuedMap(const Image<T>& i);
+
+
+void displayTable (int* r , int height,int width);
 
 
 #include "Image.hpp"
