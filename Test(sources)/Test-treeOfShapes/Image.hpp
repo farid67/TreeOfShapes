@@ -187,7 +187,7 @@ int* union_find(int *R, int h, int w, TreeType t)
         parent[p] = p; // parent[p] <- p
         zpar[p] = p; // zpar[p] <- p
 
-        // for all n € N(p) such as zpar(n) != undef
+        // for all n in N(p) such as zpar(n) != undef
         for (n = 0 ; n < nbPixels ; n++)
         {
             if (zpar[n] != -1 && isVoisin(n,p,h,w,t))
