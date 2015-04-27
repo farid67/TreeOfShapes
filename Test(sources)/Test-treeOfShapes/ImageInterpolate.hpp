@@ -324,11 +324,26 @@ void ImageInterpolate<T>::sort(Image<T>* im, std::vector<int>* R, TreeType t)
 
     int n;
 
+    std::cout << "nombre de pixels à écrire " << U->size() << std::endl;
+    int total = U->size();
+    int compteur =0;
+    int pourcentage = 0;
+    std::cout << "0% ..." << std::endl;
+    // estimation du temps
     while (!is_empty(q))
     {
+//        std::cout << "size of q "<< q->size() << std::endl;
         h = priority_pop(q,&l);
         im->getPixels()[h] = l;
         R->push_back(h);
+        compteur ++;
+        if (compteur >= (total/100))
+        {
+            pourcentage++;
+            std::cout << pourcentage <<"%" << std::endl;
+            compteur = 0;
+        }
+        // pour afficher le pourcentage , on calcule
 
 //        display_q(q);
 
@@ -342,6 +357,7 @@ void ImageInterpolate<T>::sort(Image<T>* im, std::vector<int>* R, TreeType t)
             }
         }
     }
+//    std::cout << "100%" << std::endl;
 }
 
 // display_q -> fonction servant à avoir un aperçu du contenu de q

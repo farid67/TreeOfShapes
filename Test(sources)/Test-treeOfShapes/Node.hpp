@@ -85,7 +85,7 @@ std::ostream& operator << (std::ostream& os, const Node& n)
     {
         for (it = node_list->begin();it != node_list->end(); it++)
         {
-            os << (*it)->getName()->str();
+            os << (*it)->getName()->str() << " ";
         }
     }
 

@@ -1,4 +1,4 @@
-
+//#include <libpng/png.h>
 #include <iostream>
 
 #include "Image.h"
@@ -129,6 +129,25 @@ int main()
 
     i_edge.afficheTree(treeOfShapes);
 
+    i.write("test2.png");
+
+
+    // test de la méthode writeTree sur le ToS obtenu en appliquand la méthode perso
+
+    i_edge.writeTree(treeOfShapes);
+
+    // test sur une image png complexe
+
+//    Image<unsigned char> google("../../Images_test/g+.png");
+//    std::cout << *(google.get_filename()) << std::endl;
+
+//    finalToS("../../Images_test/g+.png");
+
+//    finalToS("../../Images_test/test6.png");
+
+    finalToS("../../Images_test/minus.png");
+
+    // Problème avec le tableau parent semblerait-il, essayer de corriger cela
 
     return 0;
 }

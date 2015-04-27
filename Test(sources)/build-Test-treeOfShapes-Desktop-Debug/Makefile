@@ -18,7 +18,7 @@ CXXFLAGS      = -m64 -pipe -g -Wall -W -fPIE $(DEFINES)
 INCPATH       = -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++-64 -I../Test-treeOfShapes -I.
 LINK          = g++
 LFLAGS        = -m64
-LIBS          = $(SUBLIBS)  
+LIBS          = $(SUBLIBS) -lpng12 
 AR            = ar cqs
 RANLIB        = 
 QMAKE         = /usr/lib/x86_64-linux-gnu/qt5/bin/qmake
@@ -342,15 +342,15 @@ compiler_clean:
 ####### Compile
 
 main.o: ../Test-treeOfShapes/main.cpp ../Test-treeOfShapes/Image.h \
-		../Test-treeOfShapes/Image.hpp \
-		../Test-treeOfShapes/Span.h \
-		../Test-treeOfShapes/Span.hpp \
-		../Test-treeOfShapes/ImageInterpolate.h \
-		../Test-treeOfShapes/ImageInterpolate.hpp \
+		../Test-treeOfShapes/Tree.h \
 		../Test-treeOfShapes/Node.h \
 		../Test-treeOfShapes/Node.hpp \
-		../Test-treeOfShapes/Tree.h \
-		../Test-treeOfShapes/Tree.hpp
+		../Test-treeOfShapes/Tree.hpp \
+		../Test-treeOfShapes/Image.hpp \
+		../Test-treeOfShapes/ImageInterpolate.h \
+		../Test-treeOfShapes/Span.h \
+		../Test-treeOfShapes/Span.hpp \
+		../Test-treeOfShapes/ImageInterpolate.hpp
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o main.o ../Test-treeOfShapes/main.cpp
 
 ####### Install

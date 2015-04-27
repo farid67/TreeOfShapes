@@ -20,3 +20,8 @@ Lecture du tableau parent
 
 
 // problème désinterpolation -> essayer de faire en sorte d'avoir une correspondance avec l'image issue de l'ajout d'une bordure
+
+
+ATTENTION
+-> il est très important si l'on souhaite utiliser la librairie png++ de ne pas oublier la ligne LIBS+=-lpng12 dans le fichier .pro
+-> il est également primordial d'utiliser d'abord la fonction add_edge avant d'appeler les fonctions afficheTree, afficheNode ou writeTree

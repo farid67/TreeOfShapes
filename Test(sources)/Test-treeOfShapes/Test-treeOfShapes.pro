@@ -3,6 +3,8 @@ CONFIG += console
 CONFIG -= app_bundle
 CONFIG -= qt
 
+LIBS += -lpng12
+
 SOURCES += main.cpp
 
 HEADERS += \

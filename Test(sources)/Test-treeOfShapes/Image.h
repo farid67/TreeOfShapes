@@ -3,6 +3,15 @@
 
 #include "iostream"
 #include "Tree.h"
+#include "sstream"
+
+
+#include <png++/png.hpp>
+#include <png++/image.hpp>
+#include <png++/gray_pixel.hpp>
+#include <png++/end_info.hpp> // pour la destruction ?
+//#include "png.h"
+
 
 enum TreeType {MinTree, MaxTree};
 
@@ -15,6 +24,9 @@ private:
     T* m_pixels; // un tableau sera un tableau de pixels
     int m_h; // height
     int m_w; // width
+
+    std::string* m_filename; // dans le cas où l'image est créée à partir d'un fichier
+
 public:
     Image();
 
@@ -22,6 +34,10 @@ public:
     // constructeur par copie -> utile pour créer les images de type U (interpolate)
 
     Image (const Image<T>& im);
+
+    // ajout constructeur qui construit une image à partir du fichier png
+
+    Image(const std::string& filename);
 
     ~Image();
 
@@ -41,6 +57,10 @@ public:
 
     void setH(int H);
     void setW(int w);
+
+    std::string *get_filename() const;
+
+    void set_filename(const std::string& name);
 
     int* sortGrayLevel(); // tri les pixels en fonction de leur niveau de gris
 
@@ -62,12 +82,21 @@ public:
 
     void afficheTree(Tree* t);// affiche toutes les composantes sur l'image avec les liens de parenté
 
+    void writeNode(Node* n); // même fonction que pour AfficheNode, mais on écrit le contenu du noeud dans une image
+
+    void writeTree(Tree* t); // pareil que pour writeNode mais sur un arbre entier
 
     int* computeTreeOfShapes();// fonction qui est censé calculer l'arbre de parenté de l'image courante en suivant l'agorithme de l'article
 
     int* computeTOS_perso(); // fonction qui compute le TOS mais en modifiant l'ordre des étapes de l'algorithme
 
+    void write (const std::string& filename);
+
+
 };
+
+// version finale (en utilisant la version perso de compute ToS)
+void finalToS(const std::string &filename);
 
 template <typename T>
 std::ostream& operator << (std::ostream& os,const Image<T>& i );

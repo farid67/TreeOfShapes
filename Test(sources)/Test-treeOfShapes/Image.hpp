@@ -8,9 +8,8 @@
 #include "algorithm"
 
 template <typename T>
-Image<T>::Image():m_pixels(NULL),m_h(0),m_w(0)
+Image<T>::Image():m_pixels(NULL),m_h(0),m_w(0),m_filename(NULL)
 {
-
 }
 
 template <typename T>
@@ -25,7 +24,7 @@ Image<T>::~Image()
 
 // constructeur par copie
 template <typename T>
-Image<T>::Image(const Image<T> &im):m_h(im.getH()),m_w(im.getW())
+Image<T>::Image(const Image<T> &im):m_h(im.getH()),m_w(im.getW()),m_filename(im.get_filename())
 {
     m_pixels = new T [m_h *m_w];
     int i, j;
@@ -36,11 +35,66 @@ Image<T>::Image(const Image<T> &im):m_h(im.getH()),m_w(im.getW())
             m_pixels[i * m_w  + j ] = im.getPixel(i,j);
         }
     }
+
+}
+
+// constructeur à partir d'un fichier
+template <typename T>
+Image<T>::Image(const std::string &filename)
+{
+    // pour le moment seul les png sont gérés
+    png::image<png::gray_pixel> tmp (filename);// lecture
+
+    // maj hauteur + largeur
+    m_h = tmp.get_height();
+    m_w = tmp.get_width();
+
+    // construction tableau
+    m_pixels = new T[m_h*m_w];
+
+    // écriture valeur
+    int x, y ;
+    for (x= 0; x < m_h; x++)
+    {
+        for (y=0; y < m_w; y++)
+        {
+            m_pixels[x*m_w + y] = tmp.get_pixel(y,x);
+        }
+    }
+    std::string file = filename.substr( filename.find_last_of("/") + 1 );
+    std::string file_2 = file.substr(0,file.find_first_of("."));
+
+
+    m_filename = new std::string (file_2);
+
 }
 
 
 template <typename T>
-Image<T>::Image(int height, int width)
+void Image<T>::write(const std::string &filename)
+{
+    // création d'une image png ayant les mêmes dimension que l'image de base
+    png::image<png::gray_pixel> tmp (m_w,m_h);
+
+    // écriture des valeurs dans l'image qu'on vient de créer
+    int x,y;
+    for (x=0; x< m_h;x++)
+    {
+        for (y=0; y < m_w;y++)
+        {
+            tmp.set_pixel(y,x,getPixel(x,y));
+        }
+    }
+
+    // écriture du fichier grâce à la fonction write de png
+    tmp.write(filename);
+
+    // il faut essayer de trouver un moyen pour supprimer l'image png
+
+}
+
+template <typename T>
+Image<T>::Image(int height, int width):m_filename(NULL)
 {
     m_pixels = new T[height*width];
 
@@ -113,6 +167,18 @@ template <typename T>
 void Image<T>::setPixels(T *t)
 {
     m_pixels = t;
+}
+
+template <typename T>
+std::string *Image<T>::get_filename() const
+{
+    return m_filename;
+}
+
+template <typename T>
+void Image<T>::set_filename(const std::string& name)
+{
+    m_filename = new std::string(name);
 }
 
 // tri des pixels en fonction de leur niveau de gris -> le resultat est un tableau contenant les offsets des éléments du plus clair au plus foncé
@@ -218,7 +284,6 @@ int* union_find(int *R, int h, int w, TreeType t)
 
 bool isVoisin(int n, int p, int h , int w , TreeType t)
 {
-
     switch (t)
     {
     case MinTree : // connexité ->
@@ -567,8 +632,8 @@ int* Image<T>::computeTreeOfShapes()
 
     // affichage de la légende ainsi que l'image Interpolate (avec couleurs pour y voir quelque chose)
 
-    displayLegend();
-    u.displayImage();
+//    displayLegend();
+//    u.displayImage();
 
     // on crée ensuite l'image U exposant b qui contiendra le résultat de la procédure sort
     Image<T> u_b;
@@ -588,7 +653,7 @@ int* Image<T>::computeTreeOfShapes()
 
     int*corresponding_table = u.corresponding();
 
-
+    // ici r_clean ne servira pas (uniquement pour les tests) -> cela pourrait provoquer un warning de la part du compilateur
     int* r_clean = u.R_un_interpolate(&r[0],corresponding_table);
 
 
@@ -618,10 +683,12 @@ int* Image<T>::computeTOS_perso()
 
     ImageInterpolate<T> u (*set_valuedIm);
 
+    std::cout << "interpolation done" << std::endl;
+
     // affichage de la légende ainsi que l'image Interpolate (avec couleurs pour y voir quelque chose)
 
-    displayLegend();
-    u.displayImage();
+//    displayLegend();
+//    u.displayImage();
 
     // on crée ensuite l'image U exposant b qui contiendra le résultat de la procédure sort
     Image<T> u_b;
@@ -630,6 +697,8 @@ int* Image<T>::computeTOS_perso()
 
     u.sort(&u_b,&r,MinTree);// le type d'arbre ne change pas l'arbre obtenu (ce qui est modifié est le sens de parcour des pixels)
 
+    std::cout << "... sort done" << std::endl;
+
     // ici on choisi de commencer par effectuer la désinterpolation de R qui donne un résultat correct sur les tests
     // -> r_clean correspond bien à un parcours en profondeur de l'arbre des formes
 
@@ -637,13 +706,19 @@ int* Image<T>::computeTOS_perso()
 
     int * r_clean = u.R_un_interpolate(&r[0],corresponding_table);
 
+    std::cout << "... r cleaned" << std::endl;
+
     // on effectue le union-find sur CE TABLEAU (r_clean)
 
     int* parent_clean = union_find(r_clean,init.getH(),init.getW(),MinTree);
 
+    std::cout << "... union find done" << std::endl;
+
     // on effectue la canonization maintenant
 
     canonize_tree(parent_clean,init.getH()*init.getW(),init,r_clean);
+
+    std::cout << "... tree canonized" << std::endl;
 
     return parent_clean;
 }
@@ -699,6 +774,61 @@ void Image<T>::afficheTree(Tree *t)
 }
 
 
+// essayer de modifier le prototype pour que le second argument soit une chaine de caractère qui sera le nom du fichier
+template <typename T>
+void Image<T>::writeNode(Node *n)
+{
+    //on crée une image ayant les même dimensions que l'image courante et qui contiendra le noeud n
+    Image<unsigned char> Image_node(getH(),getW());
+
+    int x,y;
+    int current_offset=0;
+    for (x = 0; x < getH(); x++)
+    {
+        for (y =0; y < getW(); y ++)
+        {
+            if (n->contains(current_offset))
+            {
+                // si le noeud contient l'offset courant, on colore le pixel en noir
+                Image_node.setPixel(x,y,0);
+                // si on envisage de procéder sur d'autres images que celles en niveau de gris on pourra utiliser une fonction min et max
+                // ou min serait 0 pour le cas présent et max 255
+            }
+            else
+            {
+                // le fond sera coloré en blanc
+                Image_node.setPixel(x,y,255);
+            }
+            current_offset++;
+        }
+    }
+
+    // on écrit ensuite le contenu dans un fichier ayant pour nom le nom du noeud.png
+
+    std::ostringstream filename ;
+
+    if (get_filename() != static_cast<std::string*>(NULL))
+        filename << *get_filename() << n->getName()->str() <<".png";
+    else
+        filename << n->getName()->str() <<".png";
+//    std::cout << filename.str() << std::endl;
+    Image_node.write(filename.str());
+}
+
+template <typename T>
+void Image<T>::writeTree(Tree *t)
+{
+    Node* tmp = t->getTreeRoot();
+    writeNode(tmp);
+    std::vector<Node*>::iterator it;
+    for (it= tmp->getSons()->begin();it != tmp->getSons()->end(); it++)
+    {
+        Tree* new_tree = new Tree(*it);
+        writeTree(new_tree);
+    }
+}
+
+
 template <typename T>
 std::ostream & operator<< (std::ostream& os, const Image<T>& i)
 {
@@ -734,6 +864,24 @@ void displayTable(int* table, int h, int w)
     std::cout << std::endl;
 }
 
+
+void finalToS(const std::string& filename)
+{
+    Image<unsigned char> i(filename);
+    std::cout << "image correctly created" << std::endl;
+    int * parent_Tos = i.computeTreeOfShapes();
+    std::cout << "... parent table computed" << std::endl;
+    // nom du ToS
+    std::ostringstream ToS_name;
+    ToS_name << filename << "_ToS";
+    Tree* ToS = new Tree (parent_Tos,i.getH()+2*i.getW()+2,ToS_name.str());
+    std::cout << ToS_name.str() << " created" << std::endl;
+    i.add_edge();
+    // version texte de l'arbre
+    std::cout << *ToS << std::endl;
+    i.writeTree(ToS);
+    std::cout << "... over" << std::endl;
+}
 
 
 #endif // IMAGE_HPP
