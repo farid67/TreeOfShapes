@@ -25,3 +25,8 @@ Lecture du tableau parent
 ATTENTION
 -> il est très important si l'on souhaite utiliser la librairie png++ de ne pas oublier la ligne LIBS+=-lpng12 dans le fichier .pro
 -> il est également primordial d'utiliser d'abord la fonction add_edge avant d'appeler les fonctions afficheTree, afficheNode ou writeTree
+
+
+
+// L'ajout d'une application qt a été envisagée mais finalement les fichiers ayant étés écrits avant l'ajout de l'application 
+il y a beaucoup d'erreurs, donc on laisse tomber pour le moment

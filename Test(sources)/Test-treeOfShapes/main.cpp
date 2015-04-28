@@ -1,14 +1,8 @@
 //#include <libpng/png.h>
 #include <iostream>
-
 #include "Image.h"
-#include "Span.h"
-#include "ImageInterpolate.h"
 
-#include "Node.h"
-#include "Tree.h"
-
-int main()
+int main(int argc, char* argv[])
 {
 //    /*
     // Image tirée de l'article de base : "A quasi linear algorithm to compute the tree of shapes.."
@@ -81,6 +75,7 @@ int main()
 
 //    */
 
+//    /*
     //                      TESTS CRéTION DES MAX ET MIN-TREE
 
 
@@ -147,9 +142,11 @@ int main()
 
 //    finalToS("../../Images_test/minus.png");
 
-    finalToS("../../Images_test/youtube_small.png");
 
-//    finalToS("../../Images_test/test3.png"); // images trop grande
+    finalToS("../../Images_test/test3.png"); // images trop grande
+
+
+//    finalToS("../../Images_test/youtube_small.png");
 
     return 0;
 }

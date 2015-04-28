@@ -12,7 +12,6 @@
 #include <png++/end_info.hpp> // pour la destruction ?
 //#include "png.h"
 
-
 enum TreeType {MinTree, MaxTree};
 
 

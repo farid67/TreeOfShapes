@@ -1,7 +1,6 @@
 #ifndef IMAGEINTERPOLATE_H
 #define IMAGEINTERPOLATE_H
 
-
 #include "Image.h"
 #include "Span.h"
 #include "vector"

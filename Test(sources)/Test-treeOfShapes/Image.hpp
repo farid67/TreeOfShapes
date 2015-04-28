@@ -7,6 +7,7 @@
 #include "math.h"
 #include "algorithm"
 
+
 template <typename T>
 Image<T>::Image():m_pixels(NULL),m_h(0),m_w(0),m_filename(NULL)
 {
@@ -703,7 +704,7 @@ int* Image<T>::computeTOS_perso()
     // et r qui contiendra également le résultat de la procédure sort
     std::vector<int> r;
 
-    u.sort(&u_b,&r,MaxTree);// le type d'arbre ne change pas l'arbre obtenu (ce qui est modifié est le sens de parcour des pixels)
+    u.sort(&u_b,&r,MinTree);// le type d'arbre ne change pas l'arbre obtenu (ce qui est modifié est le sens de parcour des pixels)
 
     std::cout << "... sort done" << std::endl;
 
@@ -718,7 +719,7 @@ int* Image<T>::computeTOS_perso()
 
     // on effectue le union-find sur CE TABLEAU (r_clean)
 
-    int* parent_clean = union_find(r_clean,init.getH(),init.getW(),MaxTree);
+    int* parent_clean = union_find(r_clean,init.getH(),init.getW(),MinTree);
 
     std::cout << "... union find done" << std::endl;
 
@@ -729,7 +730,7 @@ int* Image<T>::computeTOS_perso()
 
     std::cout << "... tree canonized" << std::endl;
 
-    displayTable(parent_clean,init.getH(),init.getW());
+//    displayTable(parent_clean,init.getH(),init.getW());
 
     return parent_clean;
 }

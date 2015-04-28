@@ -3,6 +3,7 @@ CONFIG += console
 CONFIG -= app_bundle
 CONFIG -= qt
 
+
 LIBS += -lpng12
 
 SOURCES += main.cpp
@@ -17,8 +18,7 @@ HEADERS += \
     Node.h \
     Node.hpp \
     Tree.h \
-    Tree.hpp
+    Tree.hpp \
 
 OTHER_FILES += \
     Explications.txt
-

@@ -9,7 +9,7 @@ Node::Node(int offset_root)
     m_offset_root = offset_root;
     // création du vector d'éléments
     m_elements = new std::vector<int>();
-    //création du vector de Fils et initialisation du père à NULL
+    //création du vector de Fils ...et initialisation du père à NULL
     m_sons = new std::vector<Node*>();
 
     m_father = static_cast<Node*>(NULL);
