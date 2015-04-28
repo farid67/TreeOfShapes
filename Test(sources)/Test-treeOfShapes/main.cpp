@@ -136,7 +136,7 @@ int main()
 //    Image<unsigned char> google("../../Images_test/g+.png");
 //    std::cout << *(google.get_filename()) << std::endl;
 
-    finalToS("../../Images_test/g+.png");
+//    finalToS("../../Images_test/g+.png");
 
 //    finalToS("../../Images_test/test6.png");
 
@@ -146,7 +146,9 @@ int main()
 //    finalToS("../../Images_test/test3.png"); // images trop grande
 
 
-//    finalToS("../../Images_test/youtube_small.png");
+    finalToS("../../Images_test/youtube_small.png");
+
+
 
     return 0;
 }

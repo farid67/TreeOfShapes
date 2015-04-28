@@ -5,7 +5,7 @@
 #include "Tree.h"
 #include "sstream"
 
-
+#include "list"
 #include <png++/png.hpp>
 #include <png++/image.hpp>
 #include <png++/gray_pixel.hpp>
@@ -104,6 +104,9 @@ int* union_find (const int *R , int h, int w, TreeType t);    // paramètre -> l
                                                         // pour le max_tree et le min-tree, le tri sera fait en fonction du niveau de gris
 
 bool isVoisin(int n, int p, int h, int w, TreeType t);
+
+// fonction créée pour essayer d'améliorer la complexité
+std::list<int>* getVoisin(int p, int h, int w, TreeType t);
 
 int find_root(int* zpar, int n);
 

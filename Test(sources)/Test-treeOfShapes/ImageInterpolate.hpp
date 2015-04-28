@@ -321,7 +321,7 @@ void ImageInterpolate<T>::sort(Image<T>* im, std::vector<int>* R, TreeType t)
 
     l = l_inf;
 
-    int n;
+//    int n;
 
     std::cout << "nombre de pixels à écrire " << U->size() << std::endl;
     int total = U->size();
@@ -347,14 +347,32 @@ void ImageInterpolate<T>::sort(Image<T>* im, std::vector<int>* R, TreeType t)
 //        display_q(q);
 
         // pour tout n € N(h) tel que deja_vu[n] = faux
-        for (n = 0; n < nbp; n++)
+//        for (n = 0; n < nbp; n++)
+//        {
+//            if (!deja_vu[n] && isVoisin(n,h,this->getH(),this->getW(),t))
+//            {
+//                priority_push(q,n,U,l);
+//                deja_vu[n] = true;
+//            }
+//        }
+
+        // autre version de la boucle ci-dessus (pour améliorer la complexité)
+
+//        std::cout << "version modif" << std::endl;
+        std::list<int>* p_voisin = getVoisin(h,this->getH(),this->getW(),t); // on peut même faire un vector si on souhaite
+
+        std::list<int>::iterator n;
+        for (n = p_voisin->begin(); n != p_voisin->end();n++)
         {
-            if (!deja_vu[n] && isVoisin(n,h,this->getH(),this->getW(),t))
+//            std::cout << *it << " " ;
+            if (!deja_vu[*n])
             {
-                priority_push(q,n,U,l);
-                deja_vu[n] = true;
+                priority_push(q,*n,U,l);
+                deja_vu[*n] = true;
             }
         }
+//        std::cout << std::endl;
+
     }
 //    std::cout << "100%" << std::endl;
 }

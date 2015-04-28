@@ -301,9 +301,9 @@ bool isVoisin(int n, int p, int h , int w , TreeType t)
     case MaxTree :
         if (n/w == p/w ) // si les 2 pixels sont sur la même ligne
             return (n == p-1 || n == p+1);
-        if (n/w == p/w -1 )// ligne du dessus
+        if (n/w == p/w -1 && p/w -1 > 0)// ligne du dessus
             return (n == p-w-1 || n == p-w+1 || n == p-w);
-        if (n/w == p/w + 1)
+        if (n/w == p/w + 1 && p/w +1 < h)
             return (n == p+w-1 || n == p+w+1 || n == p+w);
         return false;
         break;
@@ -311,6 +311,47 @@ bool isVoisin(int n, int p, int h , int w , TreeType t)
         return false;
         break;
     }
+}
+
+std::list<int>* getVoisin(int p, int h, int w, TreeType t)
+{
+    std::list<int>* voisin = new std::list<int>();
+
+    switch (t)
+    {
+    case MinTree :
+        if (isVoisin(p-1,p,h,w,t))
+            voisin->push_back(p-1);
+        if (isVoisin(p+1,p,h,w,t))
+            voisin->push_back(p+1);
+        if (isVoisin(p-w,p,h,w,t))
+            voisin->push_back(p-w);
+        if (isVoisin(p+w,p,h,w,t))
+            voisin->push_back(p+w);
+        break;
+    case MaxTree :
+        if (isVoisin(p-1,p,h,w,t))
+            voisin->push_back(p-1);
+        if (isVoisin(p+1,p,h,w,t))
+            voisin->push_back(p+1);
+        if (isVoisin(p-w,p,h,w,t))
+            voisin->push_back(p-w);
+        if (isVoisin(p+w,p,h,w,t))
+            voisin->push_back(p+w);
+        if (isVoisin(p-w-1,p,h,w,t))
+            voisin->push_back(p-w-1);
+        if (isVoisin(p-w+1,p,h,w,t))
+            voisin->push_back(p-w+1);
+        if (isVoisin(p+w-1,p,h,w,t))
+            voisin->push_back(p+w-1);
+        if (isVoisin(p+w+1,p,h,w,t))
+            voisin->push_back(p+w+1);
+        break;
+    default:
+        break;
+    }
+
+    return voisin;
 }
 
 
