@@ -2,7 +2,7 @@
 #include <iostream>
 #include "Image.h"
 
-int main(int argc, char* argv[])
+int main()
 {
 //    /*
     // Image tirée de l'article de base : "A quasi linear algorithm to compute the tree of shapes.."
@@ -136,14 +136,14 @@ int main(int argc, char* argv[])
 //    Image<unsigned char> google("../../Images_test/g+.png");
 //    std::cout << *(google.get_filename()) << std::endl;
 
-//    finalToS("../../Images_test/g+.png");
+    finalToS("../../Images_test/g+.png");
 
 //    finalToS("../../Images_test/test6.png");
 
 //    finalToS("../../Images_test/minus.png");
 
 
-    finalToS("../../Images_test/test3.png"); // images trop grande
+//    finalToS("../../Images_test/test3.png"); // images trop grande
 
 
 //    finalToS("../../Images_test/youtube_small.png");

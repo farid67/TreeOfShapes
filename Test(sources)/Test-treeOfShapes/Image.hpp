@@ -704,7 +704,7 @@ int* Image<T>::computeTOS_perso()
     // et r qui contiendra également le résultat de la procédure sort
     std::vector<int> r;
 
-    u.sort(&u_b,&r,MinTree);// le type d'arbre ne change pas l'arbre obtenu (ce qui est modifié est le sens de parcour des pixels)
+    u.sort(&u_b,&r,MaxTree);// le type d'arbre ne change pas l'arbre obtenu (ce qui est modifié est le sens de parcour des pixels)
 
     std::cout << "... sort done" << std::endl;
 
@@ -719,7 +719,7 @@ int* Image<T>::computeTOS_perso()
 
     // on effectue le union-find sur CE TABLEAU (r_clean)
 
-    int* parent_clean = union_find(r_clean,init.getH(),init.getW(),MinTree);
+    int* parent_clean = union_find(r_clean,init.getH(),init.getW(),MaxTree);
 
     std::cout << "... union find done" << std::endl;
 
