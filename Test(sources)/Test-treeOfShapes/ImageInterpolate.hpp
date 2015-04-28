@@ -17,17 +17,10 @@ ImageInterpolate<T>::ImageInterpolate(const Image<T> &im):Image<T>(im)
     // création d'un tableau de span pour les d-1 faces
     //  On commence par créer les d-1 faces car elles sont créées à partir des d-2 faces, donc de la set-valued map
 
-    // on part du principe qu'on a donnée l'image de base (avec la bordure) comme paramètre,
-        // il faut donc commencer par lui effectuer la set-valued map
+    int h(im.getH()),w(im.getW());// ligne inutile normalement car on fait appel au constructeur par copie de toutes manières
 
 
-    // ligne inutile si on passe la set-valued map au constructeur
-//    this->set_valued();
-
-    int h(im.getH()),w(im.getW());
-
-
-    d_1Faces_H = new Span<T> [h * w+1];
+    d_1Faces_H = new Span<T> [h * (w+1)];
     d_1Faces_V = new Span<T> [(h+1) * w];
 
     // affichage -> test
@@ -134,6 +127,12 @@ ImageInterpolate<T>::ImageInterpolate(const Image<T> &im):Image<T>(im)
     this->setH(2*h +1);
     this->setW(2*w +1);
 
+}
+
+// destructeur
+template <typename T>
+ImageInterpolate<T>::~ImageInterpolate()
+{
 }
 
 // accesseurs

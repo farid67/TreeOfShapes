@@ -19,6 +19,9 @@ public:
     // le seul constructeur qui ait du sens ici et celui qui prend en argument une image et qui créer une image interpolate
     ImageInterpolate( const Image<T>& i);
 
+    // destructeur
+    ~ImageInterpolate();
+
 
     // accesseurs
     Span<T>* getD_0Face();

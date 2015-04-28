@@ -24,7 +24,7 @@ Image<T>::~Image()
 
 // constructeur par copie
 template <typename T>
-Image<T>::Image(const Image<T> &im):m_h(im.getH()),m_w(im.getW()),m_filename(im.get_filename())
+Image<T>::Image(const Image<T> &im):m_h(im.getH()),m_w(im.getW()),m_filename(NULL)
 {
     m_pixels = new T [m_h *m_w];
     int i, j;
@@ -35,6 +35,8 @@ Image<T>::Image(const Image<T> &im):m_h(im.getH()),m_w(im.getW()),m_filename(im.
             m_pixels[i * m_w  + j ] = im.getPixel(i,j);
         }
     }
+    if (im.get_filename()!=NULL)
+        m_filename = new std::string(*im.get_filename());
 
 }
 
@@ -87,9 +89,13 @@ void Image<T>::write(const std::string &filename)
     }
 
     // écriture du fichier grâce à la fonction write de png
-    tmp.write(filename);
+    // écriture des différentes images dans un répertoire à part
 
-    // il faut essayer de trouver un moyen pour supprimer l'image png
+    std::ostringstream path;
+
+    path << "../../Images_result/"<< filename ;
+
+    tmp.write(path.str());
 
 }
 
@@ -466,7 +472,7 @@ void Image<T>::set_valued()
     // création d'un nouveau tableau
 
     // nouvelle largeur et hauteur
-    int new_h  (m_h + (m_h -1)), new_w = (m_w + (m_w - 1));
+    int new_h  (m_h + (m_h -1)), new_w (m_w + (m_w - 1));
 
     // on considère qu'à la création du tableau, il est forcément rempli avec des 0
     T* set_val = new T [new_h * new_w];
@@ -640,9 +646,9 @@ int* Image<T>::computeTreeOfShapes()
     // et r qui contiendra également le résultat de la procédure sort
     std::vector<int> r;
 
-    u.sort(&u_b,&r,MinTree);// le type d'arbre ne change pas l'arbre obtenu (ce qui est modifié est le sens de parcour des pixels)
+    u.sort(&u_b,&r,MaxTree);// le type d'arbre ne change pas l'arbre obtenu (ce qui est modifié est le sens de parcour des pixels)
 
-    int *parent = union_find(&r[0],u_b.getH(),u_b.getW(),MinTree); //UNION-FIND
+    int *parent = union_find(&r[0],u_b.getH(),u_b.getW(),MaxTree); //UNION-FIND
 
     canonize_tree(parent,u_b.getH()*u_b.getW(),u_b,&r[0]); // canonize_tree
 
@@ -681,6 +687,8 @@ int* Image<T>::computeTOS_perso()
 
     // on passe à la représentation de l'image suivant la grille de Khalimsky (interpolation fonction)
 
+//    std::cout << " tentative d'interpolation " << std::endl;
+
     ImageInterpolate<T> u (*set_valuedIm);
 
     std::cout << "interpolation done" << std::endl;
@@ -695,7 +703,7 @@ int* Image<T>::computeTOS_perso()
     // et r qui contiendra également le résultat de la procédure sort
     std::vector<int> r;
 
-    u.sort(&u_b,&r,MinTree);// le type d'arbre ne change pas l'arbre obtenu (ce qui est modifié est le sens de parcour des pixels)
+    u.sort(&u_b,&r,MaxTree);// le type d'arbre ne change pas l'arbre obtenu (ce qui est modifié est le sens de parcour des pixels)
 
     std::cout << "... sort done" << std::endl;
 
@@ -710,9 +718,10 @@ int* Image<T>::computeTOS_perso()
 
     // on effectue le union-find sur CE TABLEAU (r_clean)
 
-    int* parent_clean = union_find(r_clean,init.getH(),init.getW(),MinTree);
+    int* parent_clean = union_find(r_clean,init.getH(),init.getW(),MaxTree);
 
     std::cout << "... union find done" << std::endl;
+
 
     // on effectue la canonization maintenant
 
@@ -720,10 +729,10 @@ int* Image<T>::computeTOS_perso()
 
     std::cout << "... tree canonized" << std::endl;
 
+    displayTable(parent_clean,init.getH(),init.getW());
+
     return parent_clean;
 }
-
-
 
 template <typename T>
 void Image<T>::afficheNode(Node *n)
@@ -868,17 +877,19 @@ void displayTable(int* table, int h, int w)
 void finalToS(const std::string& filename)
 {
     Image<unsigned char> i(filename);
-    std::cout << "image correctly created" << std::endl;
-    int * parent_Tos = i.computeTreeOfShapes();
+    std::cout << "image correctly created (dimension : " << i.getH() << "*" << i.getW() << ")" << std::endl;
+    int * parent_Tos = i.computeTOS_perso();
+//    int * parent_Tos = i.computeTreeOfShapes();
     std::cout << "... parent table computed" << std::endl;
     // nom du ToS
     std::ostringstream ToS_name;
-    ToS_name << filename << "_ToS";
-    Tree* ToS = new Tree (parent_Tos,i.getH()+2*i.getW()+2,ToS_name.str());
+    ToS_name << *i.get_filename() << "_ToS";
+    Tree* ToS = new Tree (parent_Tos,(i.getH()+2)*(i.getW()+2),ToS_name.str());
     std::cout << ToS_name.str() << " created" << std::endl;
     i.add_edge();
     // version texte de l'arbre
     std::cout << *ToS << std::endl;
+//    std::cout << "écriture de l'arbre" << std::endl;
     i.writeTree(ToS);
     std::cout << "... over" << std::endl;
 }

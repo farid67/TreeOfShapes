@@ -41,7 +41,6 @@ Tree::Tree(int *parent, int nbElement,std::string name)
         }
     }
 
-
     // création des n Node, sachant que n représente le nombre d'éléments du vector
     std::vector <Node*>* Tree_node = new std::vector<Node*>();
 

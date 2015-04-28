@@ -136,7 +136,7 @@ int main()
 
     i_edge.writeTree(treeOfShapes);
 
-    // test sur une image png complexe
+    // quelques tests ... (principal problème => temps de calcul de la procédure sort)
 
 //    Image<unsigned char> google("../../Images_test/g+.png");
 //    std::cout << *(google.get_filename()) << std::endl;
@@ -145,9 +145,11 @@ int main()
 
 //    finalToS("../../Images_test/test6.png");
 
-    finalToS("../../Images_test/minus.png");
+//    finalToS("../../Images_test/minus.png");
 
-    // Problème avec le tableau parent semblerait-il, essayer de corriger cela
+    finalToS("../../Images_test/youtube_small.png");
+
+//    finalToS("../../Images_test/test3.png"); // images trop grande
 
     return 0;
 }
