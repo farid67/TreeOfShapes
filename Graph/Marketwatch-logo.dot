@@ -1,0 +1,28 @@
+graph "Marketwatch-logo_ToS"
+{
+Node_9 [margin=0 shape=box, style=bold, label=<<TABLE border="0" cellborder="0"><TR><TD><IMG SRC="../../Images_result/Marketwatch-logoNode_9.png"/></TD></TR></TABLE>>];
+Node_759 [margin=0 shape=box, style=bold, label=<<TABLE border="0" cellborder="0"><TR><TD><IMG SRC="../../Images_result/Marketwatch-logoNode_759.png"/></TD></TR></TABLE>>];
+Node_383 [margin=0 shape=box, style=bold, label=<<TABLE border="0" cellborder="0"><TR><TD><IMG SRC="../../Images_result/Marketwatch-logoNode_383.png"/></TD></TR></TABLE>>];
+Node_27 [margin=0 shape=box, style=bold, label=<<TABLE border="0" cellborder="0"><TR><TD><IMG SRC="../../Images_result/Marketwatch-logoNode_27.png"/></TD></TR></TABLE>>];
+Node_76 [margin=0 shape=box, style=bold, label=<<TABLE border="0" cellborder="0"><TR><TD><IMG SRC="../../Images_result/Marketwatch-logoNode_76.png"/></TD></TR></TABLE>>];
+Node_794 [margin=0 shape=box, style=bold, label=<<TABLE border="0" cellborder="0"><TR><TD><IMG SRC="../../Images_result/Marketwatch-logoNode_794.png"/></TD></TR></TABLE>>];
+Node_550 [margin=0 shape=box, style=bold, label=<<TABLE border="0" cellborder="0"><TR><TD><IMG SRC="../../Images_result/Marketwatch-logoNode_550.png"/></TD></TR></TABLE>>];
+Node_802 [margin=0 shape=box, style=bold, label=<<TABLE border="0" cellborder="0"><TR><TD><IMG SRC="../../Images_result/Marketwatch-logoNode_802.png"/></TD></TR></TABLE>>];
+Node_394 [margin=0 shape=box, style=bold, label=<<TABLE border="0" cellborder="0"><TR><TD><IMG SRC="../../Images_result/Marketwatch-logoNode_394.png"/></TD></TR></TABLE>>];
+Node_779 [margin=0 shape=box, style=bold, label=<<TABLE border="0" cellborder="0"><TR><TD><IMG SRC="../../Images_result/Marketwatch-logoNode_779.png"/></TD></TR></TABLE>>];
+Node_535 [margin=0 shape=box, style=bold, label=<<TABLE border="0" cellborder="0"><TR><TD><IMG SRC="../../Images_result/Marketwatch-logoNode_535.png"/></TD></TR></TABLE>>];
+Node_766 [margin=0 shape=box, style=bold, label=<<TABLE border="0" cellborder="0"><TR><TD><IMG SRC="../../Images_result/Marketwatch-logoNode_766.png"/></TD></TR></TABLE>>];
+Node_409 [margin=0 shape=box, style=bold, label=<<TABLE border="0" cellborder="0"><TR><TD><IMG SRC="../../Images_result/Marketwatch-logoNode_409.png"/></TD></TR></TABLE>>];
+Node_9 -- Node_759;
+Node_9 -- Node_383;
+Node_9 -- Node_27;
+Node_27 -- Node_76;
+Node_27 -- Node_794;
+Node_9 -- Node_550;
+Node_9 -- Node_802;
+Node_9 -- Node_394;
+Node_9 -- Node_779;
+Node_9 -- Node_535;
+Node_9 -- Node_766;
+Node_9 -- Node_409;
+}

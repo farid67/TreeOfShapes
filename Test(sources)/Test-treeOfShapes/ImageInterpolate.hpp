@@ -362,9 +362,10 @@ void ImageInterpolate<T>::sort(Image<T>* im, std::vector<int>* R, TreeType t)
         std::list<int>* p_voisin = getVoisin(h,this->getH(),this->getW(),t); // on peut même faire un vector si on souhaite
 
         std::list<int>::iterator n;
+//        std::cout << "voisins :";
         for (n = p_voisin->begin(); n != p_voisin->end();n++)
         {
-//            std::cout << *it << " " ;
+//            std::cout << *n << " " ;
             if (!deja_vu[*n])
             {
                 priority_push(q,*n,U,l);

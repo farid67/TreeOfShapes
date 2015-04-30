@@ -88,6 +88,7 @@ int main()
 
     int* parent_minTree = i.computeMinTree();
 
+
     Tree*min_tree = new Tree(parent_minTree,nbP,std::string("MinTree"));
 
     std::cout << *min_tree << std::endl;
@@ -142,12 +143,17 @@ int main()
 
 //    finalToS("../../Images_test/minus.png");
 
+//    finalToS("../../Images_test/test3.png");
 
-//    finalToS("../../Images_test/test3.png"); // images trop grande
+//    finalToS("../../Images_test/youtube_small.png");
 
+//    finalToS("../../Images_test/Marketwatch-logo.png");
 
-    finalToS("../../Images_test/youtube_small.png");
+//    finalToS("../../Images_test/cameraman.png");
 
+//    finalToS("../../Images_test/lena.png"); // trop grand..
+
+//    finalToS("../../Images_test/YouTube_logo.png");
 
 
     return 0;

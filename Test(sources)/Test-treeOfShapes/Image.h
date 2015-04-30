@@ -4,6 +4,7 @@
 #include "iostream"
 #include "Tree.h"
 #include "sstream"
+#include "fstream"
 
 #include "list"
 #include <png++/png.hpp>
@@ -92,7 +93,28 @@ public:
     void write (const std::string& filename);
 
 
+    // version élaguée de l'arbre (on ne construit le noeud que lorsqu'il contient assez d'éléments)
+
+    void writeNode_simpl(Node* n); // même fonction que pour AfficheNode, mais on écrit le contenu du noeud dans une image
+
+    void writeTree_simpl(Tree* t); // pareil que pour writeNode mais sur un arbre entier
+
+    // écriture du graphique dans un fichier .dot
+
+    void writeNode_graphviz(Node*n,const std::string& filename);
+
+    void writeTree_graphviz(Tree* t,const std::string& filename);
+
+    // écriture de info du noeud en début de graph
+    void writeNodeInfo_graphviz(Node* t, const std::string& filename);
+    void writeTreeInfo_graphviz(Tree* t, const std::string& filename);
+
+
+
 };
+void initGraphviz(const std::string& filename, const std::string &tree_name);
+
+void finishGraphviz(const std::string& filename);
 
 // version finale (en utilisant la version perso de compute ToS)
 void finalToS(const std::string &filename);

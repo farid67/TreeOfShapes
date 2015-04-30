@@ -240,11 +240,12 @@ int* Image<T>::sortGrayLevel()
 int* union_find(int *R, int h, int w, TreeType t)
 {
     int nbPixels = h * w;
+    std::cout << nbPixels << std::endl;
 
     int* zpar= new int [nbPixels];
     int * parent = new int [nbPixels];
 
-    int i,n,p,r;
+    int i,p,r;
 
     // for all p do zpar(p) <- undef
     for (i = 0 ; i < nbPixels; i++)
@@ -260,12 +261,33 @@ int* union_find(int *R, int h, int w, TreeType t)
         parent[p] = p; // parent[p] <- p
         zpar[p] = p; // zpar[p] <- p
 
+//        int n;
+
         // for all n in N(p) such as zpar(n) != undef
-        for (n = 0 ; n < nbPixels ; n++)
+//        for (n = 0 ; n < nbPixels ; n++)
+//        {
+//            if (zpar[n] != -1 && isVoisin(n,p,h,w,t))
+//            {
+//                std::cout << n << std::endl;
+//                r = find_root(zpar,n);
+//                if (r != p)
+//                {
+//                    parent[r] = p;
+//                    zpar[r] = p;
+//                }
+//            }
+//        }
+
+        // utilisation de getVoisin pour diminuer la complexité
+        std::list<int>* p_voisin = getVoisin(p,h,w,t);
+
+        std::list<int>::iterator n;
+        for (n = p_voisin->begin(); n != p_voisin->end();n++)
         {
-            if (zpar[n] != -1 && isVoisin(n,p,h,w,t))
+            if (zpar[*n]!=-1)
             {
-                r = find_root(zpar,n);
+//                std::cout << "union_find : "<<*n << std::endl;
+                r = find_root(zpar,*n);
                 if (r != p)
                 {
                     parent[r] = p;
@@ -291,10 +313,15 @@ int* union_find(int *R, int h, int w, TreeType t)
 
 bool isVoisin(int n, int p, int h , int w , TreeType t)
 {
+//    std::cout << h*w <<std::endl;
+//    std::cout << "iSVoisin : n : " << n << " p : " << p << " dimension : " << h*w <<  std::endl;
+
+    if (n>=(h*w) || n<0)
+        return false;
     switch (t)
     {
     case MinTree : // connexité ->
-        if (n/w == p/w)// test sur la même ligne
+        if (n/w == p/w )// test sur la même ligne
             return (n == p-1 || n == p+1);// à droite ou à gauche
         else return(std::abs(p - n) == w ); // sinon test si n est "juste" au-dessus ou "juste "en-dessous" de p
         break;
@@ -359,6 +386,7 @@ std::list<int>* getVoisin(int p, int h, int w, TreeType t)
 
 int find_root(int *zpar, int n)
 {
+//    std::cout << "find root entrée : " << n << std::endl;
     if (zpar[n] == n)
     {
         return n;
@@ -879,6 +907,64 @@ void Image<T>::writeTree(Tree *t)
     }
 }
 
+// version élagée de l'arbre pour l'écriture des fichiers
+
+template <typename T>
+void Image<T>::writeTree_simpl(Tree *t)
+{
+    Node* tmp = t->getTreeRoot();
+    writeNode_simpl(tmp);
+    std::vector<Node*>::iterator it;
+    for (it= tmp->getSons()->begin();it != tmp->getSons()->end(); it++)
+    {
+        Tree* new_tree = new Tree(*it);
+        writeTree_simpl(new_tree);
+    }
+}
+
+template <typename T>
+void Image<T>::writeNode_simpl(Node *n)
+{
+    if (n->getElements()->size() < ((this->getH()*this->getW())/400)+1)
+        return;
+
+    //on crée une image ayant les même dimensions que l'image courante et qui contiendra le noeud n
+    Image<unsigned char> Image_node(getH(),getW());
+
+    int x,y;
+    int current_offset=0;
+    for (x = 0; x < getH(); x++)
+    {
+        for (y =0; y < getW(); y ++)
+        {
+            if (n->contains(current_offset))
+            {
+                // si le noeud contient l'offset courant, on colore le pixel en noir
+                Image_node.setPixel(x,y,0);
+                // si on envisage de procéder sur d'autres images que celles en niveau de gris on pourra utiliser une fonction min et max
+                // ou min serait 0 pour le cas présent et max 255
+            }
+            else
+            {
+                // le fond sera coloré en blanc
+                Image_node.setPixel(x,y,255);
+            }
+            current_offset++;
+        }
+    }
+
+    // on écrit ensuite le contenu dans un fichier ayant pour nom le nom du noeud.png
+
+    std::ostringstream filename ;
+
+    if (get_filename() != static_cast<std::string*>(NULL))
+        filename << *get_filename() << n->getName()->str() <<".png";
+    else
+        filename << n->getName()->str() <<".png";
+//    std::cout << filename.str() << std::endl;
+    Image_node.write(filename.str());
+}
+
 
 template <typename T>
 std::ostream & operator<< (std::ostream& os, const Image<T>& i)
@@ -916,6 +1002,107 @@ void displayTable(int* table, int h, int w)
 }
 
 
+template<typename T>
+void Image<T>::writeNode_graphviz(Node* n,const std::string& filename)
+{
+    if (n->getElements()->size() < ((this->getH()*this->getW())/400)+1)
+        return;
+
+    std::ofstream file;
+    file.open(filename.c_str(),std::ios::app);
+    if (file.is_open())
+    {
+        Node* tmp = n->getFather();
+        while (tmp!= NULL && tmp->getElements()->size() < ((this->getH()*this->getW())/400)+1)
+        {
+            tmp = tmp->getFather();
+        }
+        if (tmp==NULL)
+        {
+            file.close();
+            return;
+        }
+        else
+        {
+            file << tmp->getName()->str() << " -- " << n->getName()->str() << ";\n";
+        }
+        file.close();
+    }
+}
+
+template <typename T>
+void Image<T>::writeTree_graphviz(Tree* t, const std::string& filename)
+{
+    Node* tmp = t->getTreeRoot();
+    writeNode_graphviz(tmp,filename);
+    std::vector<Node*>::iterator it;
+    for (it= tmp->getSons()->begin();it != tmp->getSons()->end(); it++)
+    {
+//        if ((*it)->getSons()->size() != 0)
+//        {
+            Tree* new_tree = new Tree(*it);
+            writeTree_graphviz(new_tree,filename);
+//        }
+    }
+}
+
+// les 2 fonctions suivantes ont pour but de spécifier les informations propres à chaque noeud ainsi que l'image
+template<typename T>
+void Image<T>::writeNodeInfo_graphviz(Node* n,const std::string& filename)
+{
+    if (n->getElements()->size() < ((this->getH()*this->getW())/400)+1)
+        return;
+
+    std::ofstream file;
+    file.open(filename.c_str(),std::ios::app);
+    if (file.is_open())
+    {
+        std::ostringstream file_path;
+        file_path << "../../Images_result/" << get_filename()->c_str() << n->getName()->str() << ".png";
+//        file << n->getName()->str() << "[label = <IMG SRC = \"  " << file_path.str() << "\" scale = \"false\"/>] " << ";\n";
+        file << n->getName()->str() << " [margin=0 shape=box, style=bold, label=<<TABLE border=\"0\" cellborder=\"0\">"
+                "<TR><TD><IMG SRC=\""<< file_path.str() << "\"/></TD></TR>" << "</TABLE>>];\n";
+    }
+}
+template <typename T>
+void Image<T>::writeTreeInfo_graphviz(Tree* t, const std::string& filename)
+{
+    Node* tmp = t->getTreeRoot();
+    writeNodeInfo_graphviz(tmp,filename);
+    std::vector<Node*>::iterator it;
+    for (it= tmp->getSons()->begin();it != tmp->getSons()->end(); it++)
+    {
+//        if ((*it)->getElements()->size() > ((this->getH()*this->getW())/400))
+//        {
+            Tree* new_tree = new Tree(*it);
+            writeTreeInfo_graphviz(new_tree,filename);
+//        }
+    }
+}
+
+void initGraphviz(const std::string &filename, const std::string& tree_name)
+{
+    std::ofstream file;
+    file.open(filename.c_str(),std::ios::trunc);
+    if (file.is_open())
+    {
+        file << "graph \"" << tree_name << "\"" << std::endl;
+        file << "{" << std::endl;
+    }
+    file.close();
+}
+
+void finishGraphviz(const std::string &filename)
+{
+    std::ofstream file;;
+    file.open(filename.c_str(),std::ios::app);
+    if (file.is_open())
+    {
+        file << "}" << std::endl;
+    }
+    file.close();
+}
+
 void finalToS(const std::string& filename)
 {
     Image<unsigned char> i(filename);
@@ -930,11 +1117,32 @@ void finalToS(const std::string& filename)
     std::cout << ToS_name.str() << " created" << std::endl;
     i.add_edge();
     // version texte de l'arbre
-    std::cout << *ToS << std::endl;
+//    std::cout << *ToS << std::endl;
 //    std::cout << "écriture de l'arbre" << std::endl;
-    i.writeTree(ToS);
+
+    // ajout de la fonction permettant d'écrire l'arbre dans un fichier .dot
+    std::ostringstream graphPath;
+    graphPath << "../../Graph/" << *i.get_filename() <<".dot" ;
+    initGraphviz(graphPath.str(),ToS_name.str());
+    i.writeTreeInfo_graphviz(ToS,graphPath.str());
+    i.writeTree_graphviz(ToS,graphPath.str());
+    finishGraphviz(graphPath.str());
+
+    std::ostringstream dotCmd ;
+    std::ostringstream pngGraphPath;
+    pngGraphPath << "../../Graph/" << *i.get_filename() <<".png" ;
+    dotCmd << "dot -Tpng -o "<< pngGraphPath.str() << " " << graphPath.str() ;
+
+//    std::cout << dotCmd.str() << std::endl;
+
+    system(dotCmd.str().c_str());
+
+
+    std::cout << "... graph file done"<< std::endl;
+    i.writeTree_simpl(ToS);
     std::cout << "... over" << std::endl;
 }
+
 
 
 #endif // IMAGE_HPP

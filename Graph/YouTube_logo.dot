@@ -1,0 +1,30 @@
+graph "YouTube_logo_ToS"
+{
+Node_1486 [margin=0 shape=box, style=bold, label=<<TABLE border="0" cellborder="0"><TR><TD><IMG SRC="../../Images_result/YouTube_logoNode_1486.png"/></TD></TR></TABLE>>];
+Node_1542 [margin=0 shape=box, style=bold, label=<<TABLE border="0" cellborder="0"><TR><TD><IMG SRC="../../Images_result/YouTube_logoNode_1542.png"/></TD></TR></TABLE>>];
+Node_1667 [margin=0 shape=box, style=bold, label=<<TABLE border="0" cellborder="0"><TR><TD><IMG SRC="../../Images_result/YouTube_logoNode_1667.png"/></TD></TR></TABLE>>];
+Node_1961 [margin=0 shape=box, style=bold, label=<<TABLE border="0" cellborder="0"><TR><TD><IMG SRC="../../Images_result/YouTube_logoNode_1961.png"/></TD></TR></TABLE>>];
+Node_1929 [margin=0 shape=box, style=bold, label=<<TABLE border="0" cellborder="0"><TR><TD><IMG SRC="../../Images_result/YouTube_logoNode_1929.png"/></TD></TR></TABLE>>];
+Node_1643 [margin=0 shape=box, style=bold, label=<<TABLE border="0" cellborder="0"><TR><TD><IMG SRC="../../Images_result/YouTube_logoNode_1643.png"/></TD></TR></TABLE>>];
+Node_1673 [margin=0 shape=box, style=bold, label=<<TABLE border="0" cellborder="0"><TR><TD><IMG SRC="../../Images_result/YouTube_logoNode_1673.png"/></TD></TR></TABLE>>];
+Node_2150 [margin=0 shape=box, style=bold, label=<<TABLE border="0" cellborder="0"><TR><TD><IMG SRC="../../Images_result/YouTube_logoNode_2150.png"/></TD></TR></TABLE>>];
+Node_1705 [margin=0 shape=box, style=bold, label=<<TABLE border="0" cellborder="0"><TR><TD><IMG SRC="../../Images_result/YouTube_logoNode_1705.png"/></TD></TR></TABLE>>];
+Node_1938 [margin=0 shape=box, style=bold, label=<<TABLE border="0" cellborder="0"><TR><TD><IMG SRC="../../Images_result/YouTube_logoNode_1938.png"/></TD></TR></TABLE>>];
+Node_2141 [margin=0 shape=box, style=bold, label=<<TABLE border="0" cellborder="0"><TR><TD><IMG SRC="../../Images_result/YouTube_logoNode_2141.png"/></TD></TR></TABLE>>];
+Node_1945 [margin=0 shape=box, style=bold, label=<<TABLE border="0" cellborder="0"><TR><TD><IMG SRC="../../Images_result/YouTube_logoNode_1945.png"/></TD></TR></TABLE>>];
+Node_1996 [margin=0 shape=box, style=bold, label=<<TABLE border="0" cellborder="0"><TR><TD><IMG SRC="../../Images_result/YouTube_logoNode_1996.png"/></TD></TR></TABLE>>];
+Node_1990 [margin=0 shape=box, style=bold, label=<<TABLE border="0" cellborder="0"><TR><TD><IMG SRC="../../Images_result/YouTube_logoNode_1990.png"/></TD></TR></TABLE>>];
+Node_1486 -- Node_1542;
+Node_1542 -- Node_1667;
+Node_1542 -- Node_1961;
+Node_1542 -- Node_1929;
+Node_1542 -- Node_1643;
+Node_1542 -- Node_1673;
+Node_1673 -- Node_2150;
+Node_1486 -- Node_1705;
+Node_1486 -- Node_1938;
+Node_1938 -- Node_2141;
+Node_1486 -- Node_1945;
+Node_1945 -- Node_1996;
+Node_1996 -- Node_1990;
+}
