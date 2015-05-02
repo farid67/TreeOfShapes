@@ -145,6 +145,9 @@ int main()
 
 //    finalToS("../../Images_test/test3.png");
 
+//        finalToS("../../Images_test/test2.png"); // image trop grande également
+
+
 //    finalToS("../../Images_test/youtube_small.png");
 
 //    finalToS("../../Images_test/Marketwatch-logo.png");
@@ -154,6 +157,14 @@ int main()
 //    finalToS("../../Images_test/lena.png"); // trop grand..
 
 //    finalToS("../../Images_test/YouTube_logo.png");
+
+//    finalToS("../../Images_test/forbes-logo.png");
+
+//    finalToS("../../Images_test/test4.png");
+
+//    finalToS("../../Images_test/benches_small.png");
+
+    finalToS("../../Images_test/phone.png");
 
 
     return 0;

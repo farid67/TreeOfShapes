@@ -1120,6 +1120,9 @@ void finalToS(const std::string& filename)
 //    std::cout << *ToS << std::endl;
 //    std::cout << "écriture de l'arbre" << std::endl;
 
+    i.writeTree_simpl(ToS);
+    std::cout << "... images created"<< std::endl;
+
     // ajout de la fonction permettant d'écrire l'arbre dans un fichier .dot
     std::ostringstream graphPath;
     graphPath << "../../Graph/" << *i.get_filename() <<".dot" ;
@@ -1139,7 +1142,7 @@ void finalToS(const std::string& filename)
 
 
     std::cout << "... graph file done"<< std::endl;
-    i.writeTree_simpl(ToS);
+
     std::cout << "... over" << std::endl;
 }
 
