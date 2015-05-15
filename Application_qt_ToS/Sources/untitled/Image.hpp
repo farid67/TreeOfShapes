@@ -474,7 +474,7 @@ T Image<T>::median_edge_value()
     {
         return tmp[size/2];
     }
-    else
+    else // sinon on tire aléatoirement une des 2 valeurs
     {
         int choice =  std::rand() %2;
 
@@ -697,7 +697,7 @@ int* Image<T>::computeMaxTree()
 }
 
 template <typename T>
-int* Image<T>::computeTreeOfShapes()
+int* Image<T>::computeTreeOfShapes(TreeType t)
 {
     // dans cette fonction on suit exactement ce qui a été fait dans l'article
 
@@ -723,9 +723,9 @@ int* Image<T>::computeTreeOfShapes()
     // et r qui contiendra également le résultat de la procédure sort
     std::vector<int> r;
 
-    u.sort(&u_b,&r,MaxTree);// le type d'arbre ne change pas l'arbre obtenu (ce qui est modifié est le sens de parcour des pixels)
+    u.sort(&u_b,&r,t);// le type d'arbre ne change pas l'arbre obtenu (ce qui est modifié est le sens de parcour des pixels)
 
-    int *parent = union_find(&r[0],u_b.getH(),u_b.getW(),MaxTree); //UNION-FIND
+    int *parent = union_find(&r[0],u_b.getH(),u_b.getW(),t); //UNION-FIND
 
     canonize_tree(parent,u_b.getH()*u_b.getW(),u_b,&r[0]); // canonize_tree
 
@@ -749,7 +749,7 @@ int* Image<T>::computeTreeOfShapes()
 }
 
 template <typename T>
-int* Image<T>::computeTOS_perso()
+int* Image<T>::computeTOS_perso(TreeType t)
 {
     //les premières étapes sont les mêmes
     // on ajoute une bordure externe à l'image courante
@@ -780,7 +780,7 @@ int* Image<T>::computeTOS_perso()
     // et r qui contiendra également le résultat de la procédure sort
     std::vector<int> r;
 
-    u.sort(&u_b,&r,MaxTree);// le type d'arbre ne change pas l'arbre obtenu (ce qui est modifié est le sens de parcour des pixels)
+    u.sort(&u_b,&r,t);// le type d'arbre ne change pas l'arbre obtenu (ce qui est modifié est le sens de parcour des pixels)
 
     std::cout << "... sort done" << std::endl;
 
@@ -795,7 +795,7 @@ int* Image<T>::computeTOS_perso()
 
     // on effectue le union-find sur CE TABLEAU (r_clean)
 
-    int* parent_clean = union_find(r_clean,init.getH(),init.getW(),MaxTree);
+    int* parent_clean = union_find(r_clean,init.getH(),init.getW(),t);
 
     std::cout << "... union find done" << std::endl;
 
@@ -917,22 +917,22 @@ void Image<T>::writeTree(Tree *t)
 // version élagée de l'arbre pour l'écriture des fichiers
 
 template <typename T>
-void Image<T>::writeTree_simpl(Tree *t)
+void Image<T>::writeTree_simpl(Tree *t, int proportion)
 {
     Node* tmp = t->getTreeRoot();
-    writeNode_simpl(tmp);
+    writeNode_simpl(tmp,proportion);
     std::vector<Node*>::iterator it;
     for (it= tmp->getSons()->begin();it != tmp->getSons()->end(); it++)
     {
         Tree* new_tree = new Tree(*it);
-        writeTree_simpl(new_tree);
+        writeTree_simpl(new_tree,proportion);
     }
 }
 
 template <typename T>
-void Image<T>::writeNode_simpl(Node *n)
+void Image<T>::writeNode_simpl(Node *n, int proportion)
 {
-    if (n->getElements()->size() < ((this->getH()*this->getW())/400)+1)
+    if (n->getElements()->size() < (((this->getH()*this->getW())/1000)*proportion) +1)
         return;
 
     //on crée une image ayant les même dimensions que l'image courante et qui contiendra le noeud n
@@ -1010,9 +1010,9 @@ void displayTable(int* table, int h, int w)
 
 
 template<typename T>
-void Image<T>::writeNode_graphviz(Node* n,const std::string& filename)
+void Image<T>::writeNode_graphviz(Node* n,const std::string& filename,int proportion)
 {
-    if (n->getElements()->size() < ((this->getH()*this->getW())/400)+1)
+    if (n->getElements()->size() < (((this->getH()*this->getW())/1000)*proportion)+1)
         return;
 
     std::ofstream file;
@@ -1020,7 +1020,7 @@ void Image<T>::writeNode_graphviz(Node* n,const std::string& filename)
     if (file.is_open())
     {
         Node* tmp = n->getFather();
-        while (tmp!= NULL && tmp->getElements()->size() < ((this->getH()*this->getW())/400)+1)
+        while (tmp!= NULL && tmp->getElements()->size() < (((this->getH()*this->getW())/1000)*proportion)+1)
         {
             tmp = tmp->getFather();
         }
@@ -1038,26 +1038,26 @@ void Image<T>::writeNode_graphviz(Node* n,const std::string& filename)
 }
 
 template <typename T>
-void Image<T>::writeTree_graphviz(Tree* t, const std::string& filename)
+void Image<T>::writeTree_graphviz(Tree* t, const std::string& filename, int proportion)
 {
     Node* tmp = t->getTreeRoot();
-    writeNode_graphviz(tmp,filename);
+    writeNode_graphviz(tmp,filename,proportion);
     std::vector<Node*>::iterator it;
     for (it= tmp->getSons()->begin();it != tmp->getSons()->end(); it++)
     {
 //        if ((*it)->getSons()->size() != 0)
 //        {
             Tree* new_tree = new Tree(*it);
-            writeTree_graphviz(new_tree,filename);
+            writeTree_graphviz(new_tree,filename,proportion);
 //        }
     }
 }
 
 // les 2 fonctions suivantes ont pour but de spécifier les informations propres à chaque noeud ainsi que l'image
 template<typename T>
-void Image<T>::writeNodeInfo_graphviz(Node* n,const std::string& filename)
+void Image<T>::writeNodeInfo_graphviz(Node* n,const std::string& filename,int proportion)
 {
-    if (n->getElements()->size() < ((this->getH()*this->getW())/400)+1)
+    if (n->getElements()->size() < (((this->getH()*this->getW())/1000)*proportion)+1)
         return;
 
     std::ofstream file;
@@ -1072,17 +1072,17 @@ void Image<T>::writeNodeInfo_graphviz(Node* n,const std::string& filename)
     }
 }
 template <typename T>
-void Image<T>::writeTreeInfo_graphviz(Tree* t, const std::string& filename)
+void Image<T>::writeTreeInfo_graphviz(Tree* t, const std::string& filename, int proportion)
 {
     Node* tmp = t->getTreeRoot();
-    writeNodeInfo_graphviz(tmp,filename);
+    writeNodeInfo_graphviz(tmp,filename,proportion);
     std::vector<Node*>::iterator it;
     for (it= tmp->getSons()->begin();it != tmp->getSons()->end(); it++)
     {
 //        if ((*it)->getElements()->size() > ((this->getH()*this->getW())/400))
 //        {
             Tree* new_tree = new Tree(*it);
-            writeTreeInfo_graphviz(new_tree,filename);
+            writeTreeInfo_graphviz(new_tree,filename,proportion);
 //        }
     }
 }
@@ -1114,7 +1114,7 @@ void finalToS(const std::string& filename)
 {
     Image<unsigned char> i(filename);
     std::cout << "image correctly created (dimension : " << i.getH() << "*" << i.getW() << ")" << std::endl;
-    int * parent_Tos = i.computeTOS_perso();
+    int * parent_Tos = i.computeTOS_perso(MaxTree);
 //    int * parent_Tos = i.computeTreeOfShapes();
     std::cout << "... parent table computed" << std::endl;
     // nom du ToS
@@ -1127,15 +1127,15 @@ void finalToS(const std::string& filename)
 //    std::cout << *ToS << std::endl;
 //    std::cout << "écriture de l'arbre" << std::endl;
 
-    i.writeTree_simpl(ToS);
+    i.writeTree_simpl(ToS,5);
     std::cout << "... images created"<< std::endl;
 
     // ajout de la fonction permettant d'écrire l'arbre dans un fichier .dot
     std::ostringstream graphPath;
     graphPath << "../../Graph/" << *i.get_filename() <<".dot" ;
     initGraphviz(graphPath.str(),ToS_name.str());
-    i.writeTreeInfo_graphviz(ToS,graphPath.str());
-    i.writeTree_graphviz(ToS,graphPath.str());
+    i.writeTreeInfo_graphviz(ToS,graphPath.str(),5);
+    i.writeTree_graphviz(ToS,graphPath.str(),5);
     finishGraphviz(graphPath.str());
 
     std::ostringstream dotCmd ;
@@ -1152,6 +1152,51 @@ void finalToS(const std::string& filename)
 
     std::cout << "... over" << std::endl;
 }
+
+
+void finalToS2(const std::string& filename)
+{
+    Image<unsigned char> i(filename);
+    std::cout << "image correctly created (dimension : " << i.getH() << "*" << i.getW() << ")" << std::endl;
+//    int * parent_Tos = i.computeTOS_perso();
+    int * parent_Tos = i.computeTreeOfShapes(MaxTree);
+    std::cout << "... parent table computed" << std::endl;
+    // nom du ToS
+    std::ostringstream ToS_name;
+    ToS_name << *i.get_filename() << "_ToS";
+    Tree* ToS = new Tree (parent_Tos,(i.getH()+2)*(i.getW()+2),ToS_name.str());
+    std::cout << ToS_name.str() << " created" << std::endl;
+    i.add_edge();
+    // version texte de l'arbre
+//    std::cout << *ToS << std::endl;
+//    std::cout << "écriture de l'arbre" << std::endl;
+
+    i.writeTree_simpl(ToS,5);
+    std::cout << "... images created"<< std::endl;
+
+    // ajout de la fonction permettant d'écrire l'arbre dans un fichier .dot
+    std::ostringstream graphPath;
+    graphPath << "../../Graph/" << *i.get_filename() <<".dot" ;
+    initGraphviz(graphPath.str(),ToS_name.str());
+    i.writeTreeInfo_graphviz(ToS,graphPath.str(),5);
+    i.writeTree_graphviz(ToS,graphPath.str(),5);
+    finishGraphviz(graphPath.str());
+
+    std::ostringstream dotCmd ;
+    std::ostringstream pngGraphPath;
+    pngGraphPath << "../../Graph/" << *i.get_filename() <<".png" ;
+    dotCmd << "dot -Tpng -o "<< pngGraphPath.str() << " " << graphPath.str() ;
+
+//    std::cout << dotCmd.str() << std::endl;
+
+    system(dotCmd.str().c_str());
+
+
+    std::cout << "... graph file done"<< std::endl;
+
+    std::cout << "... over" << std::endl;
+}
+
 
 
 

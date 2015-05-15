@@ -164,7 +164,7 @@ int main()
 
 //    finalToS("../../Images_test/benches_small.png");
 
-    finalToS("../../Images_test/phone.png");
+//    finalToS("../../Images_test/phone.png");
 
 
     return 0;

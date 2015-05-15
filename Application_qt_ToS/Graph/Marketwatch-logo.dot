@@ -1,0 +1,24 @@
+graph "Marketwatch-logo_ToS"
+{
+Node_4872 [margin=0 shape=box, style=bold, label=<<TABLE border="0" cellborder="0"><TR><TD><IMG SRC="../../Images_result/Marketwatch-logoNode_4872.png"/></TD></TR></TABLE>>];
+Node_4873 [margin=0 shape=box, style=bold, label=<<TABLE border="0" cellborder="0"><TR><TD><IMG SRC="../../Images_result/Marketwatch-logoNode_4873.png"/></TD></TR></TABLE>>];
+Node_4877 [margin=0 shape=box, style=bold, label=<<TABLE border="0" cellborder="0"><TR><TD><IMG SRC="../../Images_result/Marketwatch-logoNode_4877.png"/></TD></TR></TABLE>>];
+Node_4907 [margin=0 shape=box, style=bold, label=<<TABLE border="0" cellborder="0"><TR><TD><IMG SRC="../../Images_result/Marketwatch-logoNode_4907.png"/></TD></TR></TABLE>>];
+Node_4909 [margin=0 shape=box, style=bold, label=<<TABLE border="0" cellborder="0"><TR><TD><IMG SRC="../../Images_result/Marketwatch-logoNode_4909.png"/></TD></TR></TABLE>>];
+Node_4913 [margin=0 shape=box, style=bold, label=<<TABLE border="0" cellborder="0"><TR><TD><IMG SRC="../../Images_result/Marketwatch-logoNode_4913.png"/></TD></TR></TABLE>>];
+Node_4940 [margin=0 shape=box, style=bold, label=<<TABLE border="0" cellborder="0"><TR><TD><IMG SRC="../../Images_result/Marketwatch-logoNode_4940.png"/></TD></TR></TABLE>>];
+Node_4944 [margin=0 shape=box, style=bold, label=<<TABLE border="0" cellborder="0"><TR><TD><IMG SRC="../../Images_result/Marketwatch-logoNode_4944.png"/></TD></TR></TABLE>>];
+Node_4962 [margin=0 shape=box, style=bold, label=<<TABLE border="0" cellborder="0"><TR><TD><IMG SRC="../../Images_result/Marketwatch-logoNode_4962.png"/></TD></TR></TABLE>>];
+Node_4966 [margin=0 shape=box, style=bold, label=<<TABLE border="0" cellborder="0"><TR><TD><IMG SRC="../../Images_result/Marketwatch-logoNode_4966.png"/></TD></TR></TABLE>>];
+Node_4965 [margin=0 shape=box, style=bold, label=<<TABLE border="0" cellborder="0"><TR><TD><IMG SRC="../../Images_result/Marketwatch-logoNode_4965.png"/></TD></TR></TABLE>>];
+Node_4872 -- Node_4873;
+Node_4873 -- Node_4877;
+Node_4873 -- Node_4907;
+Node_4873 -- Node_4909;
+Node_4873 -- Node_4913;
+Node_4873 -- Node_4940;
+Node_4873 -- Node_4944;
+Node_4873 -- Node_4962;
+Node_4873 -- Node_4966;
+Node_4873 -- Node_4965;
+}
